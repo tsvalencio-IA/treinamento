@@ -1,0 +1,14 @@
+{
+  "pacote": "GlamoreJoias-TREINAMENTO-SEPARADO",
+  "versao": "treinamento-separado-v1-20260717",
+  "arquivos_adicionados": [
+    "treinamento/index.html",
+    "treinamento/css/manual-interativo.css",
+    "treinamento/js/manual-interativo.js",
+    "treinamento/js/manual-conhecimento.js",
+    "treinamento/LEIA-ANTES-DE-PUBLICAR.txt"
+  ],
+  "arquivos_oficiais_modificados": [],
+  "rota": "/treinamento/",
+  "observacao": "Nenhum arquivo existente do sistema oficial faz parte deste ZIP."
+}

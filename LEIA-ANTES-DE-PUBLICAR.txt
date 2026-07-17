@@ -1,0 +1,47 @@
+GLAMORE JOIAS — SITE DE TREINAMENTO SEPARADO
+
+OBJETIVO
+Este pacote adiciona somente a pasta /treinamento ao repositório.
+Ele NÃO substitui, NÃO altera e NÃO referencia o treinamento no fluxo oficial.
+
+ARQUIVOS OFICIAIS QUE NÃO DEVEM SER SUBSTITUÍDOS
+- index.html
+- js/app.js
+- js/firebaseClient.js
+- js/pdf-importer.js
+- js/reports.js
+- css/styles.css
+- firebase-database.rules.json
+- vercel.json
+- package.json
+- README.md
+
+COMO PUBLICAR
+1. Abra o repositório oficial no GitHub.
+2. Envie a pasta "treinamento" inteira na raiz do repositório.
+3. Não substitua nenhum arquivo existente.
+4. Aguarde o deploy da Vercel.
+5. Abra diretamente:
+   https://SEU-DOMINIO/treinamento/
+
+No domínio atual, a URL esperada é:
+https://glamore-joias.vercel.app/treinamento/
+
+NÃO EXISTE LINK NO MENU OFICIAL
+O sistema principal continua exatamente como estava.
+Somente quem receber a URL /treinamento/ acessará o treinamento.
+
+SEGURANÇA
+O iframe mostra as telas reais do sistema no mesmo domínio, permitindo destacar
+os componentes reais. Cliques, envio de formulários e ações operacionais dentro
+da demonstração são bloqueados pelo modo somente visualização.
+
+LOGIN
+Como o treinamento reutiliza a sessão do mesmo domínio, o usuário deve estar
+autenticado no sistema oficial. O botão "Entrar / abrir sistema oficial" abre o
+login em outra aba. Depois do login, basta recarregar a página de treinamento.
+
+IMPORTANTE
+Não envie os ZIPs anteriores V68 MANUAL INTERATIVO ao repositório oficial,
+porque aqueles pacotes continham index.html e js/app.js modificados.
+Use somente este pacote separado.
