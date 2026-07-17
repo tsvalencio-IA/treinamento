@@ -239,3 +239,32 @@ button{cursor:pointer}
 @media(prefers-reduced-motion:reduce){
   *{scroll-behavior:auto!important;animation:none!important;transition:none!important}
 }
+
+/* V3 — narração e destaque realmente sincronizados */
+.sync-now{
+  margin:10px 0 12px;padding:13px 14px;border-radius:14px;
+  background:linear-gradient(135deg,#101b2f,#1d2d49);color:#fff;
+  border:1px solid rgba(255,255,255,.08);box-shadow:0 12px 28px rgba(11,18,32,.18)
+}
+.sync-now small{display:block;color:#f1d680;font-size:10px;font-weight:950;letter-spacing:.1em}
+.sync-now p{margin:6px 0 0;font-size:16px;line-height:1.48;font-weight:780}
+.sync-now.waiting{background:linear-gradient(135deg,#4c3a12,#74591a)}
+.sync-now.paused{background:linear-gradient(135deg,#4a2430,#6b2d3d)}
+.lesson-card{transition:border-color .2s,background .2s,transform .2s,box-shadow .2s,opacity .2s}
+.lesson-cards.has-active .lesson-card{opacity:.58}
+.lesson-card.cue-active{opacity:1!important;transform:translateX(5px);border-color:#d0a139;background:#fff9e9;box-shadow:0 8px 22px rgba(190,143,30,.15)}
+.lesson-lead.cue-active{outline:3px solid rgba(210,166,59,.38);outline-offset:2px}
+.technical-details.cue-active{outline:3px solid rgba(210,166,59,.3)}
+.target-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.target-buttons button{height:100%}
+#repeatCueBtn{border-color:#b9c5d8;background:#f4f7fb;color:#243550}
+#cueCount{color:#a57819}
+.stage-card.sync-speaking{box-shadow:0 20px 64px rgba(17,24,39,.16),0 0 0 3px rgba(210,166,59,.24)}
+.stage-card.sync-paused{box-shadow:0 20px 64px rgba(17,24,39,.16),0 0 0 3px rgba(180,35,24,.2)}
+.training-highlight{
+  box-shadow:0 0 0 9999px rgba(5,10,18,.08),0 0 0 10px rgba(226,179,63,.24)!important;
+}
+@media(max-width:680px){
+  .sync-now p{font-size:15px}
+  .target-buttons{display:grid;grid-template-columns:1fr 1fr}
+}

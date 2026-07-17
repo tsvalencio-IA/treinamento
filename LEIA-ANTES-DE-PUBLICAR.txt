@@ -1,25 +1,25 @@
-GLAMORE JOIAS — TREINAMENTO PROFISSIONAL V2
+GLAMORE JOIAS — TREINAMENTO PROFISSIONAL V3 SINCRONIZADO
 
-Este pacote é destinado SOMENTE ao repositório separado de treinamento.
+PUBLICAR SOMENTE NO REPOSITÓRIO SEPARADO:
+tsvalencio-IA/treinamento
 
-CORREÇÕES PRINCIPAIS
-1. A explicação fica em um painel próprio e não pode ser coberta pelo sistema.
-2. O balão flutuante que ficava por cima da tela foi removido.
-3. As 57 aulas receberam explicações em linguagem simples.
-4. Cada aula mostra:
-   - o que você faz;
-   - o que o sistema faz;
-   - o resultado esperado;
-   - atenção;
-   - rastreabilidade.
-5. A área de perguntas fica em uma aba separada.
-6. O ambiente continua sem Firebase oficial.
+NÃO PUBLICAR NO REPOSITÓRIO OFICIAL GLAMOREJOIAS.
 
-PUBLICAÇÃO
-- Apague os arquivos da versão anterior no repositório treinamento.
-- Extraia este ZIP.
-- Envie todo o conteúdo extraído para a raiz.
-- Aguarde o GitHub Pages.
-- Abra /verificar.html e confirme a aprovação.
+CORREÇÃO DESTA VERSÃO
+- O sistema não avança mais antes da narração.
+- Cada frase possui seu próprio alvo real.
+- O destaque aparece primeiro.
+- O áudio começa somente depois que o alvo está visível.
+- O próximo campo ou botão só aparece depois que a frase anterior termina.
+- Play/Pausar interrompe a narração e mantém a cena atual.
+- Repetir esta frase repete exatamente o alvo e o áudio atuais.
 
-NÃO ENVIE ESTE PACOTE AO REPOSITÓRIO OFICIAL GlamoreJoias.
+COMO PUBLICAR
+1. Apague os arquivos da versão anterior no repositório treinamento.
+2. Extraia este ZIP.
+3. Envie todo o conteúdo extraído para a raiz do repositório.
+4. Aguarde o GitHub Pages publicar.
+5. Abra /verificar.html.
+
+RESULTADO ESPERADO
+APROVADO — 14/14 verificações concluídas.

@@ -1,16 +1,19 @@
 {
-  "pacote": "GlamoreJoias-TREINAMENTO-PROFISSIONAL-V2",
-  "versao": "2.0.0",
+  "pacote": "GlamoreJoias-TREINAMENTO-PROFISSIONAL-V3-SINCRONIZADO",
+  "versao": "3.0.0",
   "destino": "repositorio separado tsvalencio-IA/treinamento",
   "rota": "https://tsvalencio-ia.github.io/treinamento/",
   "firebase_oficial": false,
   "aulas": 57,
-  "explicacoes_estruturadas": 57,
+  "cenas_sincronizadas": 222,
+  "motor": "destaque -> cursor -> frase -> fim do audio -> proximo alvo",
+  "temporizador_independente_do_audio": false,
   "sobreposicao_da_explicacao": false,
   "arquivos_principais": [
     "index.html",
     "css/treinamento.css",
     "js/treinamento.js",
+    "js/roteiro-sincronizado.js",
     "js/conhecimento.js",
     "js/explicacoes.js",
     "sistema/index.html"

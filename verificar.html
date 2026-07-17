@@ -3,39 +3,31 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Verificar Treinamento Glamore V2</title>
+  <title>Verificar Treinamento Glamore V3</title>
   <style>
     :root{font-family:Inter,system-ui,sans-serif;color:#111827;background:#f4f0e7}
-    *{box-sizing:border-box}
-    body{margin:0;padding:24px}
-    .box{max-width:860px;margin:auto;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:22px;padding:24px;box-shadow:0 22px 60px rgba(0,0,0,.12)}
-    h1{margin:0 0 5px}.muted{color:#6b665e}
-    .bar{height:12px;background:#ece7dd;border-radius:99px;overflow:hidden;margin:20px 0}
-    .bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#c89222,#efd783);transition:.25s}
-    .row{display:grid;grid-template-columns:28px 1fr;gap:9px;padding:11px 0;border-bottom:1px solid #eee}
-    .ok{color:#087443}.bad{color:#b42318}
-    .status{font-weight:900;margin-top:18px;padding:14px;border-radius:13px;background:#f7f3ea}
-    a{display:inline-block;margin-top:18px;background:#101827;color:#fff;text-decoration:none;padding:11px 14px;border-radius:11px;font-weight:800}
+    *{box-sizing:border-box}body{margin:0;padding:24px}.box{max-width:900px;margin:auto;background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:22px;padding:24px;box-shadow:0 22px 60px rgba(0,0,0,.12)}
+    h1{margin:0 0 5px}.muted{color:#6b665e}.bar{height:12px;background:#ece7dd;border-radius:99px;overflow:hidden;margin:20px 0}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#c89222,#efd783);transition:.25s}
+    .row{display:grid;grid-template-columns:28px 1fr;gap:9px;padding:11px 0;border-bottom:1px solid #eee}.ok{color:#087443}.bad{color:#b42318}.status{font-weight:900;margin-top:18px;padding:14px;border-radius:13px;background:#f7f3ea}a{display:inline-block;margin-top:18px;background:#101827;color:#fff;text-decoration:none;padding:11px 14px;border-radius:11px;font-weight:800}
   </style>
 </head>
 <body>
   <main class="box">
-    <span class="muted">DIAGNÓSTICO PÓS-PUBLICAÇÃO · V2</span>
-    <h1>Verificar treinamento</h1>
-    <p class="muted">Esta página confirma a estrutura, a segurança e a nova explicação sem sobreposição.</p>
-    <div class="bar"><span id="bar"></span></div>
-    <div id="rows"></div>
-    <div id="status" class="status">Iniciando...</div>
-    <a href="./">Abrir treinamento</a>
+    <span class="muted">DIAGNÓSTICO PÓS-PUBLICAÇÃO · V3</span>
+    <h1>Verificar treinamento sincronizado</h1>
+    <p class="muted">Confirma que áudio, frase, cursor e destaque usam o mesmo roteiro, sem o antigo avanço por cronômetro.</p>
+    <div class="bar"><span id="bar"></span></div><div id="rows"></div><div id="status" class="status">Iniciando...</div><a href="./">Abrir treinamento</a>
   </main>
   <script>
     const tests = [
       ['Página principal','./index.html',t=>t.includes('./sistema/index.html#/dashboard')&&!t.includes('../index.html')],
-      ['Explicação separada da tela','./index.html',t=>t.includes('id="lessonLead"')&&t.includes('id="lessonUser"')&&t.includes('id="lessonSystem"')],
+      ['Painel da frase atual','./index.html',t=>t.includes('id="spokenNow"')&&t.includes('id="cueCount"')&&t.includes('id="repeatCueBtn"')],
       ['Sem balão sobre o sistema','./index.html',t=>!t.includes('targetBalloon')],
-      ['Estilo responsivo V2','./css/treinamento.css',t=>t.includes('grid-template-columns:440px minmax(0,1fr)')&&t.includes('.lesson-card')],
-      ['Motor do treinamento','./js/treinamento.js',t=>t.includes('LESSON_DETAILS')&&t.includes('TRAINING_TRACKS')&&t.includes('sourceIndex')],
-      ['57 explicações detalhadas','./js/explicacoes.js',t=>(t.match(/"simple":/g)||[]).length===57&&(t.match(/"attention":/g)||[]).length===57],
+      ['Estilo sincronizado','./css/treinamento.css',t=>t.includes('.sync-now')&&t.includes('.cue-active')&&t.includes('.stage-card.sync-speaking')],
+      ['Motor por cenas','./js/treinamento.js',t=>t.includes('runSynchronizedLesson')&&t.includes('presentCue')&&t.includes('speakAndWait')],
+      ['Sem cronômetro independente','./js/treinamento.js',t=>!t.includes('function schedule()')&&!t.includes('estimatedSeconds(')],
+      ['Roteiro de 57 aulas','./js/roteiro-sincronizado.js',t=>t.includes('SYNC_TARGETS')&&t.includes('synchronizedTargetsFor')],
+      ['Explicações completas','./js/explicacoes.js',t=>(t.match(/"simple":/g)||[]).length===57&&(t.match(/"attention":/g)||[]).length===57],
       ['Base de conhecimento','./js/conhecimento.js',t=>t.includes('MANUAL_TOUR')&&t.includes('MANUAL_KNOWLEDGE')],
       ['Tela real simulada','./sistema/index.html',t=>t.includes('./js/app.js')&&t.includes('DADOS SIMULADOS')],
       ['Render real do sistema','./sistema/js/app.js',t=>t.includes('function render()')&&t.includes('v67-estorno-producao')],
@@ -43,32 +35,7 @@
       ['Configuração sem credencial oficial','./sistema/js/config.js',t=>!t.includes('AIza')&&!t.includes('firebaseio.com')],
       ['Dados demonstrativos','./sistema/js/demo-data.js',t=>t.includes('DEMO_DATA')&&t.includes('alertasOperacionais')]
     ];
-
-    (async()=>{
-      let ok=0;
-      const rows=document.getElementById('rows');
-      for(let i=0;i<tests.length;i++){
-        const [name,url,validate]=tests[i];
-        let pass=false,detail='';
-        try{
-          const response=await fetch(url+'?check='+Date.now(),{cache:'no-store'});
-          const text=await response.text();
-          pass=response.ok&&validate(text);
-          detail=`HTTP ${response.status} · ${text.length.toLocaleString('pt-BR')} bytes`;
-        }catch(error){
-          detail=error.message;
-        }
-        if(pass)ok++;
-        rows.insertAdjacentHTML('beforeend',`<div class="row"><strong class="${pass?'ok':'bad'}">${pass?'✓':'✕'}</strong><div><strong>${name}</strong><div class="muted">${detail}</div></div></div>`);
-        document.getElementById('bar').style.width=`${((i+1)/tests.length)*100}%`;
-      }
-      const all=ok===tests.length;
-      const status=document.getElementById('status');
-      status.className='status '+(all?'ok':'bad');
-      status.textContent=all
-        ?`APROVADO — ${ok}/${tests.length} verificações concluídas. A V2 foi publicada corretamente.`
-        :`REPROVADO — ${ok}/${tests.length} verificações passaram. Envie novamente todos os arquivos do ZIP para a raiz.`;
-    })();
+    (async()=>{let ok=0;const rows=document.getElementById('rows');for(let i=0;i<tests.length;i++){const[name,url,validate]=tests[i];let pass=false,detail='';try{const response=await fetch(url+'?check='+Date.now(),{cache:'no-store'});const text=await response.text();pass=response.ok&&validate(text);detail=`HTTP ${response.status} · ${text.length.toLocaleString('pt-BR')} bytes`;}catch(error){detail=error.message;}if(pass)ok++;rows.insertAdjacentHTML('beforeend',`<div class="row"><strong class="${pass?'ok':'bad'}">${pass?'✓':'✕'}</strong><div><strong>${name}</strong><div class="muted">${detail}</div></div></div>`);document.getElementById('bar').style.width=`${((i+1)/tests.length)*100}%`;}const all=ok===tests.length;const status=document.getElementById('status');status.className='status '+(all?'ok':'bad');status.textContent=all?`APROVADO — ${ok}/${tests.length} verificações concluídas. A V3 sincronizada foi publicada corretamente.`:`REPROVADO — ${ok}/${tests.length} verificações passaram. Envie novamente todos os arquivos do ZIP para a raiz.`;})();
   </script>
 </body>
 </html>

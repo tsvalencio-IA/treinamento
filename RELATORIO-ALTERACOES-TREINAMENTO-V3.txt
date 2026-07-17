@@ -1,0 +1,19 @@
+TREINAMENTO GLAMORE V3 — RELATÓRIO DE CORREÇÃO
+
+PROBLEMA CONFIRMADO
+A V2 mudava a rota, destacava um elemento e depois narrava uma explicação longa. Durante a narração, o destaque não acompanhava cada item citado. O resultado era uma aula fora de sincronia e mais confusa que o sistema.
+
+CORREÇÃO
+- removido avanço independente por setTimeout;
+- criada sequência controlada pelo término real de cada fala;
+- criada base com 57 aulas e 222 alvos sincronizados;
+- cada frase aponta para um único campo, botão, card ou seção;
+- cursor chega ao alvo antes da fala;
+- clique visual ocorre durante a frase que manda clicar;
+- próximo alvo só é exibido após onend da narração;
+- modo sem áudio usa a mesma sequência, com tempo visual por frase;
+- pausa cancela a fala e mantém a cena atual;
+- repetição repete somente a frase e o alvo atuais;
+- painel “AGORA ACOMPANHE NA TELA” mostra exatamente o texto narrado;
+- resumo da aula continua disponível, mas não disputa atenção com a cena atual;
+- nenhuma alteração no sistema oficial ou no Firebase real.
