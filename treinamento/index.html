@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Treinamento Interativo | Ateliê Digital de Joias</title>
+  <meta name="description" content="Treinamento interativo fiel às telas e regras reais do Ateliê Digital de Joias.">
+  <link rel="stylesheet" href="./css/manual-interativo.css?v=treinamento-separado-v1-20260717">
+</head>
+<body>
+  <div class="manual-app" id="manualApp">
+    <header class="manual-topbar">
+      <div class="manual-brand">
+        <span class="manual-gem">◆</span>
+        <div><strong>Treinamento Interativo</strong><small>Ateliê Digital de Joias · treinamento separado · telas reais do sistema</small></div>
+      </div>
+      <div class="manual-top-actions">
+        <button type="button" class="manual-btn ghost" id="toggleMapBtn">Mapa completo</button>
+        <button type="button" class="manual-btn ghost" id="toggleVoiceBtn" aria-pressed="false">Narração: desligada</button>
+        <a class="manual-btn ghost" href="../index.html#/dashboard" target="_blank" rel="noopener">Entrar / abrir sistema oficial</a>
+      </div>
+    </header>
+
+    <main class="manual-layout">
+      <section class="manual-stage" aria-label="Sistema real demonstrado">
+        <div class="stage-toolbar">
+          <span class="safe-badge">MODO GUIA · NÃO CONFIRMA OPERAÇÕES</span>
+          <span id="frameStatus">Carregando a tela real...</span>
+          <button type="button" class="icon-btn" id="reloadFrameBtn" title="Recarregar tela real">↻</button>
+        </div>
+        <iframe id="systemFrame" title="Ateliê Digital de Joias real" src="../index.html?manual=1#/dashboard"></iframe>
+      </section>
+
+      <aside class="manual-guide" id="manualGuide">
+        <div class="guide-progress"><span id="progressBar"></span></div>
+        <div class="guide-meta"><span id="chapterLabel">Começo</span><span id="stepCount">1 / 1</span></div>
+        <h1 id="stepTitle">Carregando treinamento...</h1>
+        <div class="guide-copy" id="stepBody"></div>
+        <div class="guide-source" id="stepSource"></div>
+
+        <div class="guide-controls">
+          <button class="manual-btn ghost" type="button" id="prevBtn">← Voltar</button>
+          <button class="manual-btn primary" type="button" id="playBtn">▶ Play</button>
+          <button class="manual-btn ghost" type="button" id="nextBtn">Próximo →</button>
+        </div>
+        <div class="speed-row">
+          <label for="speedSelect">Tempo por etapa</label>
+          <select id="speedSelect"><option value="0.7">Rápido</option><option value="1" selected>Normal</option><option value="1.5">Detalhado</option></select>
+        </div>
+
+        <section class="qa-panel">
+          <div class="qa-head"><div><strong>Perguntar ao sistema</strong><small>Resposta baseada nos arquivos, regras e auditorias do sistema real</small></div><button type="button" class="icon-btn" id="clearChatBtn" title="Limpar conversa">⌫</button></div>
+          <div class="qa-messages" id="qaMessages" aria-live="polite">
+            <div class="message system">Pergunte como funciona uma tela, regra, algoritmo, estorno, peso, produção, alerta, relatório, permissão ou coleção. Quando não houver evidência, eu aviso em vez de inventar.</div>
+          </div>
+          <form id="qaForm" class="qa-form">
+            <textarea id="qaInput" rows="3" placeholder="Ex.: Por que produção aprovada não cria ordem de produção?" required></textarea>
+            <button class="manual-btn primary" type="submit">Responder com fontes</button>
+          </form>
+          <div class="quick-questions" id="quickQuestions"></div>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="mapDialog" class="map-dialog">
+    <div class="map-head"><div><strong>Mapa completo das funções</strong><small>Clique em qualquer etapa para mostrar a tela real.</small></div><button class="icon-btn" id="closeMapBtn" type="button">×</button></div>
+    <div id="mapContent" class="map-content"></div>
+  </dialog>
+
+  <script type="module" src="./js/manual-interativo.js?v=treinamento-separado-v1-20260717"></script>
+</body>
+</html>

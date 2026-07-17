@@ -1,14 +1,19 @@
 {
-  "pacote": "GlamoreJoias-TREINAMENTO-SEPARADO",
-  "versao": "treinamento-separado-v1-20260717",
-  "arquivos_adicionados": [
-    "treinamento/index.html",
-    "treinamento/css/manual-interativo.css",
-    "treinamento/js/manual-interativo.js",
-    "treinamento/js/manual-conhecimento.js",
-    "treinamento/LEIA-ANTES-DE-PUBLICAR.txt"
-  ],
-  "arquivos_oficiais_modificados": [],
-  "rota": "/treinamento/",
-  "observacao": "Nenhum arquivo existente do sistema oficial faz parte deste ZIP."
+  "nome": "Glamore Treinamento Profissional",
+  "versao": "1.0.0",
+  "base_render": "GlamoreJoias V67 enviada pelo usuário",
+  "sistema_oficial_alterado": false,
+  "firebase_oficial_usado": false,
+  "rota_publicacao": "/",
+  "url_prevista": "https://tsvalencio-ia.github.io/treinamento/",
+  "recursos": [
+    "interface real em sandbox local",
+    "dados simulados",
+    "57 etapas",
+    "8 trilhas",
+    "Q&A fundamentado",
+    "cursor e spotlight",
+    "narração",
+    "AR seguro"
+  ]
 }

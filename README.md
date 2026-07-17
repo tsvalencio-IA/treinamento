@@ -1,32 +1,32 @@
-Treinamento Profissional — Ateliê Digital de Joias
+# Treinamento Profissional — Ateliê Digital de Joias
 
 Este repositório é **independente** do sistema oficial.
 
-#Publicação no GitHub Pages
+## Publicação no GitHub Pages
 
 1. Crie ou limpe o repositório usado para treinamento.
 2. Envie **todo o conteúdo deste ZIP para a raiz** do repositório.
-3. Em **Settings → Pages**, selecione Deploy from a branch, branch main, pasta / (root).
+3. Em **Settings → Pages**, selecione `Deploy from a branch`, branch `main`, pasta `/ (root)`.
 4. Aguarde a publicação e abra a URL do GitHub Pages.
 
 A URL esperada no repositório informado é:
 
-https://tsvalencio-ia.github.io/treinamento/
+`https://tsvalencio-ia.github.io/treinamento/`
 
 Após publicar, abra também:
 
-https://tsvalencio-ia.github.io/treinamento/verificar.html
+`https://tsvalencio-ia.github.io/treinamento/verificar.html`
 
 Essa página verifica automaticamente a estrutura e o isolamento do treinamento.
 
-#Segurança
+## Segurança
 
 - O treinamento não usa as credenciais do Firebase oficial.
-- O sistema exibido em sistema/ usa o app.js e o styles.css reais, mas o arquivo firebaseClient.js foi substituído por uma base simulada local.
+- O sistema exibido em `sistema/` usa o `app.js` e o `styles.css` reais, mas o arquivo `firebaseClient.js` foi substituído por uma base simulada local.
 - Nenhuma venda, entrada, produção, estorno, regra ou auditoria alcança o banco oficial.
-- O botão “Abrir sistema oficial” abre https://glamore-joias.vercel.app/ em outra aba.
+- O botão “Abrir sistema oficial” abre `https://glamore-joias.vercel.app/` em outra aba.
 
-#Conteúdo
+## Conteúdo
 
 - início rápido;
 - trilhas por cargo;

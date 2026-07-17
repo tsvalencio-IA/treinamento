@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>AR Joias — Gerador Privado</title>
+  <meta name="description" content="Módulo separado para gerar links públicos de joias com visualização 3D/AR." />
+  <link rel="stylesheet" href="./css/ar.css" />
+</head>
+
+<body class="ar-admin-page" data-ar-page="admin">
+  <noscript>Ative o JavaScript para usar o módulo AR.</noscript>
+
+  <main class="ar-shell">
+    <header class="ar-hero">
+      <div>
+        <p class="ar-kicker">Módulo separado · uso interno</p>
+        <h1>Gerador de link público AR</h1>
+        <p>
+          Gere links públicos para o cliente visualizar joias com foto, descrição, modelo 3D e provador base.
+          O link não mostra estoque, peça física, lote interno, cliente, venda, custo ou comissão.
+        </p>
+      </div>
+
+      <aside class="ar-version">
+        <span>Build</span>
+        <strong id="arBuildVersion">carregando...</strong>
+      </aside>
+    </header>
+
+    <section class="ar-panel ar-login-panel" id="arLoginPanel">
+      <div>
+        <h2>Entrar no módulo AR</h2>
+        <p>Use o mesmo login do Ateliê Digital. Este módulo é separado e liberado somente para dono/gestor autorizado.</p>
+      </div>
+
+      <form id="arLoginForm" class="ar-form-grid">
+        <label>
+          E-mail
+          <input id="arEmail" type="email" autocomplete="email" placeholder="seu@email.com" required />
+        </label>
+
+        <label>
+          Senha
+          <input id="arSenha" type="password" autocomplete="current-password" placeholder="Senha" required />
+        </label>
+
+        <button class="ar-btn ar-btn-primary" type="submit">Entrar no AR</button>
+      </form>
+
+      <p class="ar-message" id="arLoginMessage"></p>
+    </section>
+
+    <section class="ar-panel ar-admin-area" id="arAdminArea" hidden>
+      <div class="ar-admin-top">
+        <div>
+          <h2>Painel AR privado</h2>
+          <p id="arUserInfo">Conectado.</p>
+        </div>
+
+        <div class="ar-actions ar-actions-wrap">
+          <a class="ar-btn ar-btn-soft" href="./index.html">Voltar ao sistema</a>
+          <button class="ar-btn ar-btn-danger" id="arLogoutBtn" type="button">Sair</button>
+        </div>
+      </div>
+
+      <div class="ar-grid-2">
+        <details class="ar-card ar-collapsible" open>
+          <summary>
+            <div>
+              <h3>1. Escolha a joia</h3>
+              <p>Pesquisar, selecionar e minimizar esta área quando quiser.</p>
+            </div>
+            <span>Minimizar / abrir</span>
+          </summary>
+
+          <div class="ar-section-title">
+            <div>
+              <p>Pesquise por código, descrição, tipo, material, medida ou lote.</p>
+            </div>
+            <button class="ar-btn ar-btn-soft" id="arReloadProducts" type="button">Atualizar</button>
+          </div>
+
+          <div class="ar-searchbar">
+            <input id="arBuscaProduto" type="search" placeholder="Ex.: 2740AGL, anel, Ouro 18K, medida 10..." />
+            <button class="ar-btn" id="arVerTodos" type="button">Ver todas</button>
+          </div>
+
+          <div class="ar-product-list" id="arProductList">
+            <p class="ar-empty">Carregando joias...</p>
+          </div>
+        </details>
+
+        <details class="ar-card ar-collapsible" open>
+          <summary>
+            <div>
+              <h3>2. Configure o link público</h3>
+              <p>Dados públicos da joia selecionada.</p>
+            </div>
+            <span>Minimizar / abrir</span>
+          </summary>
+
+          <form id="arCatalogForm" class="ar-form-stack">
+            <input type="hidden" id="arProdutoId" />
+
+            <div class="ar-preview-row">
+              <div class="ar-thumb" id="arPreviewThumb">💍</div>
+              <div>
+                <strong id="arProdutoSelecionado">Nenhuma joia selecionada</strong>
+                <p id="arProdutoSelecionadoInfo">Selecione uma joia na lista para preencher os dados.</p>
+              </div>
+            </div>
+
+            <label>
+              Título público
+              <input id="arTitulo" placeholder="Ex.: Anel solitário Ouro 18K" required />
+            </label>
+
+            <label>
+              Descrição pública
+              <textarea id="arDescricao" rows="4" placeholder="Descrição comercial para o cliente."></textarea>
+            </label>
+
+            <div class="ar-form-grid">
+              <label>
+                Código
+                <input id="arCodigo" placeholder="2740AGL" />
+              </label>
+
+              <label>
+                Tipo da joia
+                <input id="arTipoJoia" placeholder="Anel, aliança, colar..." />
+              </label>
+
+              <label>
+                Material
+                <input id="arMaterial" placeholder="Ouro 18K" />
+              </label>
+
+              <label>
+                Medida
+                <input id="arMedida" placeholder="10" />
+              </label>
+            </div>
+
+            <label>
+              Foto pública
+              <input id="arFotoUrl" placeholder="https://..." />
+            </label>
+
+           <div class="ar-form-grid">
+  <label>
+    Arquivo 3D Web (.glb/.gltf)
+    <input id="arModelGlbUrl" placeholder="https://.../modelo.glb" />
+  </label>
+
+  <label>
+    Enviar GLB/GLTF para Cloudinary
+    <input id="arUploadGlbFile" type="file" accept=".glb,.gltf,model/gltf-binary,model/gltf+json" />
+    <button class="ar-btn ar-btn-soft" id="arUploadGlbBtn" type="button">Enviar GLB</button>
+    <small id="arUploadGlbStatus"></small>
+  </label>
+
+  <label>
+    Arquivo iPhone (.usdz)
+    <input id="arModelUsdzUrl" placeholder="https://.../modelo.usdz" />
+  </label>
+
+  <label>
+    Enviar USDZ para Cloudinary
+    <input id="arUploadUsdzFile" type="file" accept=".usdz,model/vnd.usdz+zip" />
+    <button class="ar-btn ar-btn-soft" id="arUploadUsdzBtn" type="button">Enviar USDZ</button>
+    <small id="arUploadUsdzStatus"></small>
+  </label>
+</div>
+
+            <div class="ar-form-grid">
+              <label>
+                Tipo AR
+                <select id="arTipoAR">
+                  <option value="anel">Anel / aliança</option>
+                  <option value="colar">Colar / gargantilha</option>
+                  <option value="brinco">Brinco</option>
+                  <option value="pulseira">Pulseira</option>
+                  <option value="pingente">Pingente</option>
+                  <option value="livre">Livre</option>
+                </select>
+              </label>
+
+              <label>
+                Câmera sugerida
+                <select id="arCameraPreferida">
+                  <option value="auto">Automática</option>
+                  <option value="environment">Traseira</option>
+                  <option value="user">Frontal</option>
+                </select>
+              </label>
+            </div>
+
+            <details class="ar-advanced">
+              <summary>Ajustes 3D/AR padrão</summary>
+
+              <div class="ar-form-grid">
+                <label>
+                  Escala
+                  <input id="arEscala" type="number" step="0.05" value="1" />
+                </label>
+
+                <label>
+                  Rotação
+                  <input id="arRotacao" type="number" step="1" value="0" />
+                </label>
+
+                <label>
+                  Posição X
+                  <input id="arPosX" type="number" step="1" value="0" />
+                </label>
+
+                <label>
+                  Posição Y
+                  <input id="arPosY" type="number" step="1" value="0" />
+                </label>
+              </div>
+            </details>
+
+            <label>
+              Observação pública / instrução
+              <textarea id="arObservacao" rows="3" placeholder="Ex.: Toque em abrir câmera para experimentar com ajuste manual."></textarea>
+            </label>
+
+            <div class="ar-actions ar-actions-wrap">
+              <button class="ar-btn ar-btn-primary" type="submit">Gerar link público</button>
+              <button class="ar-btn ar-btn-soft" id="arLimparForm" type="button">Limpar</button>
+            </div>
+          </form>
+
+          <div class="ar-result" id="arResult" hidden>
+            <strong>Link público gerado</strong>
+            <input id="arLinkPublico" readonly />
+
+            <div class="ar-actions ar-actions-wrap">
+              <button class="ar-btn" id="arCopiarLink" type="button">Copiar link</button>
+              <a class="ar-btn ar-btn-whatsapp" id="arWhatsLink" target="_blank" rel="noopener">Enviar WhatsApp</a>
+              <a class="ar-btn ar-btn-soft" id="arAbrirLink" target="_blank" rel="noopener">Abrir</a>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <details class="ar-panel ar-card ar-links-panel ar-collapsible" open>
+        <summary>
+          <div>
+            <h3>Links já gerados</h3>
+            <p>Somente dados públicos. Links desativados não aparecem para cliente.</p>
+          </div>
+          <span>Minimizar / abrir</span>
+        </summary>
+
+        <div class="ar-section-title">
+          <div></div>
+          <button class="ar-btn ar-btn-soft" id="arReloadLinks" type="button">Recarregar links</button>
+        </div>
+
+        <div id="arLinksList" class="ar-links-list">
+          <p class="ar-empty">Carregando links...</p>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="ar-footer">Powered by thIAguinho Soluções Digitais</footer>
+
+  
+<script>
+        document.getElementById('arLoginPanel')?.setAttribute('hidden','');
+        const app=document.getElementById('arApp'); if(app) app.hidden=false;
+        const version=document.getElementById('arBuildVersion'); if(version) version.textContent='Treinamento seguro';
+        const list=document.getElementById('arProductList'); if(list) list.innerHTML='<article class="ar-product-item"><div class="ar-thumb">💍</div><div><strong>2740AGL · Anel Solitário</strong><p>Ouro 18K · medida 15 · item demonstrativo</p></div><button class="ar-btn ar-btn-soft" type="button">Selecionar</button></article>';
+        const selected=document.getElementById('arProdutoSelecionado'); if(selected) selected.textContent='2740AGL · Anel Solitário';
+        const info=document.getElementById('arProdutoSelecionadoInfo'); if(info) info.textContent='Ouro 18K · medida 15 · dados simulados';
+        const map={arTitulo:'Anel solitário Ouro 18K',arDescricao:'Visualização pública demonstrativa.',arCodigo:'2740AGL',arTipoJoia:'Anel',arMaterial:'Ouro 18K',arMedida:'15'}; for(const [id,val] of Object.entries(map)){const el=document.getElementById(id);if(el)el.value=val;}
+        document.addEventListener('submit',e=>{e.preventDefault();e.stopImmediatePropagation();},true);document.addEventListener('click',e=>{if(e.target.closest('button,a,input,select,textarea')){e.preventDefault();e.stopImmediatePropagation();}},true);
+        </script></body>
+</html>

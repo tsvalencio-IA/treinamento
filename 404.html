@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="Treinamento profissional e seguro do Ateliê Digital de Joias.">
   <title>Treinamento Profissional | Ateliê Digital de Joias</title>
-  <link rel="stylesheet" href="./css/treinamento.css?v=1.0.0">
+  <link rel="stylesheet" href="/treinamento/css/treinamento.css?v=1.0.0">
 </head>
 <body>
   <header class="training-topbar">
@@ -28,7 +28,7 @@
         <div class="stage-tools"><label>Perfil <select id="roleSelect"><option value="dono">Administrador Master</option><option value="gerente">Gerente</option><option value="vendedor">Vendedor</option><option value="atendente">Atendente</option><option value="entregador">Entregador</option></select></label><button id="reloadBtn" title="Recarregar demonstração">↻</button></div>
       </div>
       <div class="stage-viewport" id="stageViewport">
-        <iframe id="systemFrame" title="Sistema real em modo de treinamento" src="./sistema/index.html#/dashboard"></iframe>
+        <iframe id="systemFrame" title="Sistema real em modo de treinamento" src="/treinamento/sistema/index.html#/dashboard"></iframe>
         <div id="simCursor" class="sim-cursor" aria-hidden="true"></div>
         <div id="targetBalloon" class="target-balloon" hidden><strong id="balloonTitle"></strong><span id="balloonHint"></span></div>
       </div>
@@ -68,6 +68,6 @@
   </dialog>
 
   <div id="mobileCoachToggle" class="mobile-coach-toggle">Explicação <span id="mobileStepCount"></span></div>
-  <script type="module" src="./js/treinamento.js?v=1.0.0"></script>
+  <script type="module" src="/treinamento/js/treinamento.js?v=1.0.0"></script>
 </body>
 </html>

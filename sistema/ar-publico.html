@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Joia em 3D / AR / Provador Premium</title>
+  <meta name="description" content="Visualização pública de joia em 3D, AR nativo e provador virtual na mão." />
+  <link rel="stylesheet" href="./css/ar.css" />
+  
+  
+</head>
+<body class="ar-public-page" data-ar-page="public">
+  <noscript>Ative o JavaScript para visualizar esta joia.</noscript>
+
+  <main class="ar-public-shell">
+    <section class="ar-public-loading" id="arPublicLoading">
+      <div class="ar-loader"></div>
+      <p>Carregando joia...</p>
+    </section>
+
+    <section class="ar-public-error" id="arPublicError" hidden>
+      <h1>Link indisponível</h1>
+      <p id="arPublicErrorText">Não consegui carregar este link público.</p>
+    </section>
+
+    <section class="ar-public-view" id="arPublicView" hidden>
+      <header class="ar-public-header">
+        <div>
+          <p class="ar-kicker">Catálogo público AR</p>
+          <h1 id="publicTitulo">Joia</h1>
+          <p id="publicDescricao">Visualização pública da joia.</p>
+        </div>
+        <div class="ar-public-badge" id="publicTipoBadge">3D/AR</div>
+      </header>
+
+      <section class="ar-public-grid">
+        <div class="ar-viewer-card">
+          <div id="publicViewerHost" class="ar-viewer-host">
+            <div class="ar-no-model">
+              <strong>Modelo 3D não cadastrado</strong>
+              <p>Esta joia pode ser visualizada pela foto pública. Quando o arquivo .glb/.usdz for cadastrado, o 3D/AR aparecerá aqui.</p>
+            </div>
+          </div>
+
+          <p class="ar-viewer-status" id="publicViewerStatus" hidden></p>
+
+          <div class="ar-actions ar-actions-wrap ar-public-actions">
+            <button class="ar-btn ar-btn-primary" id="publicOpenTryOn" type="button">Experimentar na mão</button>
+            <button class="ar-btn ar-btn-soft" id="publicOpenAR" type="button">Abrir AR no celular</button>
+            <button class="ar-btn ar-btn-soft" id="publicCopyLink" type="button">Copiar link</button>
+            <a class="ar-btn ar-btn-whatsapp" id="publicWhatsapp" target="_blank" rel="noopener">Compartilhar</a>
+          </div>
+
+          <p class="ar-compat" id="publicCompatText">
+            Toque em "Experimentar na mão" para ver o anel no seu dedo pela câmera, ou em "Abrir AR no celular" para o AR nativo do aparelho.
+          </p>
+        </div>
+
+        <aside class="ar-info-card">
+          <img id="publicFoto" class="ar-public-photo" alt="Foto da joia" hidden />
+          <dl>
+            <div><dt>Código</dt><dd id="publicCodigo">-</dd></div>
+            <div><dt>Tipo</dt><dd id="publicTipo">-</dd></div>
+            <div><dt>Material</dt><dd id="publicMaterial">-</dd></div>
+            <div><dt>Medida</dt><dd id="publicMedida">-</dd></div>
+          </dl>
+          <p id="publicObservacao" class="ar-public-note"></p>
+        </aside>
+      </section>
+    </section>
+  </main>
+
+  <section class="ar-tryon" id="arTryOn" hidden>
+    <div class="ar-tryon-stage" id="arTryOnStage">
+      <div id="arDebugTrigger" class="ar-debug-trigger" aria-hidden="true"></div>
+      <video id="arCameraVideo" class="ar-tryon-video" autoplay muted playsinline></video>
+      <canvas id="arRingCanvas" class="ar-tryon-canvas"></canvas>
+
+      <div class="ar-ghost-guide" id="arGhostGuide" aria-hidden="true">
+        <div class="ar-ghost-hand">
+          <span class="ar-ghost-palm"></span>
+          <span class="ar-ghost-finger ar-ghost-finger-1"></span>
+          <span class="ar-ghost-finger ar-ghost-finger-2"></span>
+          <span class="ar-ghost-finger ar-ghost-finger-3"></span>
+          <span class="ar-ghost-finger ar-ghost-finger-4"></span>
+          <span class="ar-ghost-thumb"></span>
+        </div>
+        <p>Alinhe a mão na tela</p>
+      </div>
+
+      <button class="ar-tryon-close" id="arCloseTryOn" type="button" aria-label="Fechar provador">✕</button>
+      <p class="ar-tryon-toast" id="arTryOnToast" hidden></p>
+
+      <div class="ar-finger-selector" id="arFingerSelector">
+        <button type="button" data-finger="indicador">Indicador</button>
+        <button type="button" data-finger="medio">Médio</button>
+        <button type="button" data-finger="anelar" class="is-active">Anelar</button>
+        <button type="button" data-finger="mindinho">Mindinho</button>
+      </div>
+
+      <div class="ar-tryon-actions">
+        <button class="ar-btn ar-btn-soft" id="arAdjustBtn" type="button">Ajustar</button>
+        <button class="ar-btn ar-btn-primary" id="arLockBtn" type="button">Travar</button>
+        <button class="ar-btn ar-btn-primary" id="arCaptureBtn" type="button">Foto</button>
+      </div>
+
+      <div class="ar-fit-panel" id="arFitPanel" hidden>
+        <div class="ar-fit-title">
+          <strong>Encaixe técnico</strong>
+          <span>Visível apenas com ?fit=1 ou modo técnico</span>
+        </div>
+        <label>Entrar no dedo <input type="range" id="arFitDepth" min="-1.20" max="0.80" step="0.01" value="-0.24"><output id="arFitDepthValue">-0.24</output></label>
+        <label>Inclinação <input type="range" id="arFitPitch" min="-55" max="55" step="1" value="0"><output id="arFitPitchValue">0°</output></label>
+        <label>Virar lateral <input type="range" id="arFitYaw" min="-55" max="55" step="1" value="0"><output id="arFitYawValue">0°</output></label>
+        <label>Base no dedo <input type="range" id="arFitSeat" min="0.24" max="0.70" step="0.01" value="0.38"><output id="arFitSeatValue">0.38</output></label>
+        <label>Oclusão <input type="range" id="arFitOcclusion" min="0.35" max="2.00" step="0.01" value="1"><output id="arFitOcclusionValue">1.00</output></label>
+        <button class="ar-fit-reset" id="arFitResetBtn" type="button">Zerar encaixe</button>
+      </div>
+
+      <div class="ar-debug-panel" id="arDebugPanel" hidden>
+        <div class="ar-debug-header">DIAGNÓSTICO V31 <button id="arCloseDebug" type="button">✕</button></div>
+        <dl>
+          <dt>FPS</dt><dd id="debugFps">-</dd>
+          <dt>Escala</dt><dd id="debugScale">-</dd>
+          <dt>Dedo</dt><dd id="debugFinger">-</dd>
+          <dt>Ângulo</dt><dd id="debugAngle">-</dd>
+          <dt>Posição</dt><dd id="debugPos">-</dd>
+          <dt>Offset</dt><dd id="debugOffset">-</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <footer class="ar-footer">Powered by thIAguinho Soluções Digitais</footer>
+
+  
+<script>
+        document.getElementById('arPublicLoading')?.setAttribute('hidden',''); const view=document.getElementById('arPublicView'); if(view) view.hidden=false;
+        const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v}; set('publicTitulo','Anel Solitário 2740AGL');set('publicDescricao','Demonstração do catálogo público 3D/AR.');set('publicCodigo','2740AGL');set('publicTipo','Anel');set('publicMaterial','Ouro 18K');set('publicMedida','15');set('publicObservacao','Ambiente de treinamento: câmera e compartilhamento não são ativados.');
+        document.addEventListener('click',e=>{if(e.target.closest('button,a')){e.preventDefault();e.stopImmediatePropagation();}},true);
+        </script></body>
+</html>
