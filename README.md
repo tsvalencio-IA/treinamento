@@ -1,40 +1,31 @@
 # Treinamento Profissional — Ateliê Digital de Joias
 
-Este repositório é **independente** do sistema oficial.
+Versão 2.0: explicação clara, separada da tela do sistema e sem sobreposição.
 
-## Publicação no GitHub Pages
+## Publicação
 
-1. Crie ou limpe o repositório usado para treinamento.
-2. Envie **todo o conteúdo deste ZIP para a raiz** do repositório.
-3. Em **Settings → Pages**, selecione `Deploy from a branch`, branch `main`, pasta `/ (root)`.
-4. Aguarde a publicação e abra a URL do GitHub Pages.
+Envie todo o conteúdo deste ZIP para a raiz do repositório exclusivo de treinamento.
 
-A URL esperada no repositório informado é:
+Endereço esperado:
 
 `https://tsvalencio-ia.github.io/treinamento/`
 
-Após publicar, abra também:
+## O que foi corrigido
+
+- A explicação não fica mais por cima da tela.
+- O balão flutuante sobre o sistema foi removido.
+- Cada uma das 57 aulas mostra:
+  - o que o usuário faz;
+  - o que o sistema faz;
+  - o resultado esperado;
+  - o principal cuidado;
+  - a rastreabilidade.
+- A área de perguntas fica em uma aba separada.
+- O sistema demonstrativo continua usando dados locais, sem Firebase oficial.
+- O cursor e o destaque dourado continuam mostrando o botão ou card real.
+
+## Diagnóstico
+
+Depois de publicar, abra:
 
 `https://tsvalencio-ia.github.io/treinamento/verificar.html`
-
-Essa página verifica automaticamente a estrutura e o isolamento do treinamento.
-
-## Segurança
-
-- O treinamento não usa as credenciais do Firebase oficial.
-- O sistema exibido em `sistema/` usa o `app.js` e o `styles.css` reais, mas o arquivo `firebaseClient.js` foi substituído por uma base simulada local.
-- Nenhuma venda, entrada, produção, estorno, regra ou auditoria alcança o banco oficial.
-- O botão “Abrir sistema oficial” abre `https://glamore-joias.vercel.app/` em outra aba.
-
-## Conteúdo
-
-- início rápido;
-- trilhas por cargo;
-- trilhas por tarefa;
-- manual completo com 57 etapas;
-- cursor simulado, spotlight e narração;
-- perguntas fundamentadas no código, documentos e testes;
-- demonstração responsiva para computador e celular;
-- telas administrativas e públicas de AR em modo seguro.
-
-Powered by thIAguinho Soluções Digitais.

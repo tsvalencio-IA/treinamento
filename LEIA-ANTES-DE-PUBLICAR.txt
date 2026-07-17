@@ -1,40 +1,25 @@
-Treinamento Profissional — Ateliê Digital de Joias
+GLAMORE JOIAS — TREINAMENTO PROFISSIONAL V2
 
-Este repositório é **independente** do sistema oficial.
+Este pacote é destinado SOMENTE ao repositório separado de treinamento.
 
-#Publicação no GitHub Pages
+CORREÇÕES PRINCIPAIS
+1. A explicação fica em um painel próprio e não pode ser coberta pelo sistema.
+2. O balão flutuante que ficava por cima da tela foi removido.
+3. As 57 aulas receberam explicações em linguagem simples.
+4. Cada aula mostra:
+   - o que você faz;
+   - o que o sistema faz;
+   - o resultado esperado;
+   - atenção;
+   - rastreabilidade.
+5. A área de perguntas fica em uma aba separada.
+6. O ambiente continua sem Firebase oficial.
 
-1. Crie ou limpe o repositório usado para treinamento.
-2. Envie **todo o conteúdo deste ZIP para a raiz** do repositório.
-3. Em **Settings → Pages**, selecione Deploy from a branch, branch main, pasta / (root).
-4. Aguarde a publicação e abra a URL do GitHub Pages.
+PUBLICAÇÃO
+- Apague os arquivos da versão anterior no repositório treinamento.
+- Extraia este ZIP.
+- Envie todo o conteúdo extraído para a raiz.
+- Aguarde o GitHub Pages.
+- Abra /verificar.html e confirme a aprovação.
 
-A URL esperada no repositório informado é:
-
-https://tsvalencio-ia.github.io/treinamento/
-
-Após publicar, abra também:
-
-https://tsvalencio-ia.github.io/treinamento/verificar.html
-
-Essa página verifica automaticamente a estrutura e o isolamento do treinamento.
-
-#Segurança
-
-- O treinamento não usa as credenciais do Firebase oficial.
-- O sistema exibido em sistema/ usa o app.js e o styles.css reais, mas o arquivo firebaseClient.js foi substituído por uma base simulada local.
-- Nenhuma venda, entrada, produção, estorno, regra ou auditoria alcança o banco oficial.
-- O botão “Abrir sistema oficial” abre https://glamore-joias.vercel.app/ em outra aba.
-
-#Conteúdo
-
-- início rápido;
-- trilhas por cargo;
-- trilhas por tarefa;
-- manual completo com 57 etapas;
-- cursor simulado, spotlight e narração;
-- perguntas fundamentadas no código, documentos e testes;
-- demonstração responsiva para computador e celular;
-- telas administrativas e públicas de AR em modo seguro.
-
-Powered by thIAguinho Soluções Digitais.
+NÃO ENVIE ESTE PACOTE AO REPOSITÓRIO OFICIAL GlamoreJoias.

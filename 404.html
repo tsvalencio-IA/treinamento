@@ -3,71 +3,182 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Treinamento profissional e seguro do Ateliê Digital de Joias.">
+  <meta name="description" content="Treinamento claro, guiado e seguro do Ateliê Digital de Joias.">
   <title>Treinamento Profissional | Ateliê Digital de Joias</title>
-  <link rel="stylesheet" href="/treinamento/css/treinamento.css?v=1.0.0">
+  <link rel="stylesheet" href="./css/treinamento.css?v=2.0.0">
 </head>
 <body>
   <header class="training-topbar">
     <div class="training-brand">
       <div class="training-mark">◆</div>
-      <div><strong>Treinamento Profissional</strong><span>Ateliê Digital de Joias · telas reais · dados simulados</span></div>
+      <div>
+        <strong>Treinamento Profissional</strong>
+        <span>Ateliê Digital de Joias · explicação separada da tela · dados simulados</span>
+      </div>
     </div>
     <nav class="top-actions" aria-label="Ações do treinamento">
       <button id="chooseTrackBtn" class="top-btn">Escolher trilha</button>
-      <button id="mapBtn" class="top-btn">Mapa completo</button>
+      <button id="mapBtn" class="top-btn">Mapa das aulas</button>
       <button id="voiceBtn" class="top-btn" aria-pressed="false">Narração desligada</button>
       <a class="top-btn primary" href="https://glamore-joias.vercel.app/" target="_blank" rel="noopener">Abrir sistema oficial</a>
     </nav>
   </header>
 
   <main class="training-layout">
+    <aside class="coach-card" id="coachCard" aria-label="Explicação da aula">
+      <div class="progress-track" aria-hidden="true"><span id="progressBar"></span></div>
+
+      <div class="coach-tabs" role="tablist" aria-label="Conteúdo do treinamento">
+        <button id="lessonTabBtn" class="coach-tab active" role="tab" aria-selected="true" data-tab="lesson">Aula atual</button>
+        <button id="qaTabBtn" class="coach-tab" role="tab" aria-selected="false" data-tab="qa">Perguntar</button>
+      </div>
+
+      <section id="lessonPanel" class="tab-panel active" role="tabpanel">
+        <div class="coach-meta">
+          <span id="chapterLabel">Começo</span>
+          <span id="stepCount">1 / 1</span>
+        </div>
+
+        <h1 id="stepTitle">Bem-vindo</h1>
+        <p id="lessonLead" class="lesson-lead"></p>
+
+        <div class="lesson-cards">
+          <article class="lesson-card action-card">
+            <span class="lesson-number">1</span>
+            <div><small>O QUE VOCÊ FAZ</small><p id="lessonUser"></p></div>
+          </article>
+
+          <article class="lesson-card system-card">
+            <span class="lesson-number">2</span>
+            <div><small>O QUE O SISTEMA FAZ</small><p id="lessonSystem"></p></div>
+          </article>
+
+          <article class="lesson-card result-card">
+            <span class="lesson-number">3</span>
+            <div><small>RESULTADO ESPERADO</small><p id="lessonResult"></p></div>
+          </article>
+
+          <article class="lesson-card attention-card">
+            <span class="lesson-symbol">!</span>
+            <div><small>ATENÇÃO</small><p id="lessonAttention"></p></div>
+          </article>
+        </div>
+
+        <details class="technical-details">
+          <summary>Ver explicação técnica e rastreabilidade</summary>
+          <div class="technical-content">
+            <h3>Rastreabilidade</h3>
+            <p id="lessonAudit"></p>
+            <h3>Explicação técnica</h3>
+            <p id="stepBody"></p>
+            <div id="stepSource" class="step-source"></div>
+          </div>
+        </details>
+
+        <div class="show-target-row">
+          <button id="showTargetBtn">◎ Mostrar novamente na tela</button>
+          <span id="frameStatus">Preparando a demonstração...</span>
+        </div>
+      </section>
+
+      <section id="qaPanel" class="tab-panel" role="tabpanel" hidden>
+        <div class="section-title">
+          <div>
+            <strong>Perguntar ao sistema</strong>
+            <span>Respostas fundamentadas no código, documentos e testes da versão enviada.</span>
+          </div>
+          <button id="clearQaBtn" title="Limpar conversa">×</button>
+        </div>
+        <div id="quickQuestions" class="quick-questions"></div>
+        <div id="qaMessages" class="qa-messages">
+          <div class="qa-system">Pergunte em palavras simples. Exemplo: “O que acontece quando falta peça em uma venda?” Quando não houver evidência suficiente, o treinamento avisa em vez de inventar.</div>
+        </div>
+        <form id="qaForm" class="qa-form">
+          <textarea id="qaInput" rows="4" placeholder="Escreva sua dúvida..."></textarea>
+          <button type="submit">Responder</button>
+        </form>
+      </section>
+
+      <div class="coach-footer">
+        <div class="coach-controls">
+          <button id="prevBtn">← Voltar</button>
+          <button id="playBtn" class="play">▶ Play</button>
+          <button id="nextBtn">Próximo →</button>
+        </div>
+        <div class="speed-row">
+          <label>Ritmo
+            <select id="speedSelect">
+              <option value="0.8">Rápido</option>
+              <option value="1" selected>Normal</option>
+              <option value="1.3">Mais tempo</option>
+            </select>
+          </label>
+          <button id="restartBtn">Recomeçar trilha</button>
+        </div>
+      </div>
+    </aside>
+
     <section class="stage-card" aria-label="Demonstração do sistema">
       <div class="stage-toolbar">
-        <div><span class="safe-pill">MODO TREINAMENTO · SEM FIREBASE REAL</span><small id="frameStatus">Preparando a demonstração...</small></div>
-        <div class="stage-tools"><label>Perfil <select id="roleSelect"><option value="dono">Administrador Master</option><option value="gerente">Gerente</option><option value="vendedor">Vendedor</option><option value="atendente">Atendente</option><option value="entregador">Entregador</option></select></label><button id="reloadBtn" title="Recarregar demonstração">↻</button></div>
+        <div class="stage-title">
+          <span class="safe-pill">DEMONSTRAÇÃO SEGURA</span>
+          <strong id="stageLessonTitle">Veja o destaque dourado na tela</strong>
+          <small>Nenhum dado real será alterado</small>
+        </div>
+        <div class="stage-tools">
+          <label>Perfil
+            <select id="roleSelect">
+              <option value="dono">Administrador Master</option>
+              <option value="gerente">Gerente</option>
+              <option value="vendedor">Vendedor</option>
+              <option value="atendente">Atendente</option>
+              <option value="entregador">Entregador</option>
+            </select>
+          </label>
+          <button id="reloadBtn" title="Recarregar demonstração">↻</button>
+        </div>
       </div>
+
       <div class="stage-viewport" id="stageViewport">
-        <iframe id="systemFrame" title="Sistema real em modo de treinamento" src="/treinamento/sistema/index.html#/dashboard"></iframe>
+        <iframe id="systemFrame" title="Sistema real em modo de treinamento" src="./sistema/index.html#/dashboard"></iframe>
         <div id="simCursor" class="sim-cursor" aria-hidden="true"></div>
-        <div id="targetBalloon" class="target-balloon" hidden><strong id="balloonTitle"></strong><span id="balloonHint"></span></div>
+      </div>
+
+      <div class="stage-caption">
+        <span class="caption-dot"></span>
+        <div>
+          <strong id="stageCaptionTitle">Destaque da aula</strong>
+          <span id="stageCaptionText">A explicação permanece no painel ao lado e nunca fica escondida pelo sistema.</span>
+        </div>
       </div>
     </section>
-
-    <aside class="coach-card" id="coachCard">
-      <div class="progress-track"><span id="progressBar"></span></div>
-      <div class="coach-meta"><span id="chapterLabel">Começo</span><span id="stepCount">1 / 1</span></div>
-      <h1 id="stepTitle">Bem-vindo</h1>
-      <div id="stepBody" class="step-body"></div>
-      <div id="stepSource" class="step-source"></div>
-      <div class="coach-controls">
-        <button id="prevBtn">← Voltar</button>
-        <button id="playBtn" class="play">▶ Play</button>
-        <button id="nextBtn">Próximo →</button>
-      </div>
-      <div class="speed-row"><label>Tempo por etapa <select id="speedSelect"><option value="0.65">Rápido</option><option value="1" selected>Normal</option><option value="1.45">Detalhado</option></select></label><button id="restartBtn">Recomeçar</button></div>
-
-      <section class="qa-section">
-        <div class="section-title"><div><strong>Perguntar ao sistema</strong><span>Respostas fundamentadas no código, documentos e testes da versão enviada.</span></div><button id="clearQaBtn" title="Limpar conversa">×</button></div>
-        <div id="quickQuestions" class="quick-questions"></div>
-        <div id="qaMessages" class="qa-messages"><div class="qa-system">Pergunte sobre uma tela, regra, algoritmo, estorno, peso, produção, alerta, relatório, permissão ou coleção. Quando não houver evidência suficiente, o treinamento avisa em vez de inventar.</div></div>
-        <form id="qaForm" class="qa-form"><textarea id="qaInput" rows="3" placeholder="Ex.: Por que produção aprovada não cria ordem de produção?"></textarea><button type="submit">Responder</button></form>
-      </section>
-    </aside>
   </main>
 
   <dialog id="trackDialog" class="training-dialog">
-    <div class="dialog-head"><div><span class="eyebrow">ESCOLHA COMO APRENDER</span><h2>Treinamento por objetivo</h2><p>Comece com uma visão rápida ou escolha a função que você exerce.</p></div><button data-close-dialog aria-label="Fechar">×</button></div>
+    <div class="dialog-head">
+      <div>
+        <span class="eyebrow">ESCOLHA COMO APRENDER</span>
+        <h2>Treinamento por objetivo</h2>
+        <p>Comece pela visão rápida ou escolha a função que você exerce.</p>
+      </div>
+      <button data-close-dialog aria-label="Fechar">×</button>
+    </div>
     <div id="trackGrid" class="track-grid"></div>
-    <div class="dialog-note"><strong>Ambiente seguro:</strong> a interface é renderizada pelo código real do sistema, mas usa somente dados simulados locais. Nenhuma venda, entrada, produção ou estorno chega ao Firebase oficial.</div>
+    <div class="dialog-note"><strong>Ambiente seguro:</strong> as telas são renderizadas pelo código do sistema e usam somente dados simulados locais. Nenhuma venda, entrada, produção ou estorno chega ao Firebase oficial.</div>
   </dialog>
 
   <dialog id="mapDialog" class="training-dialog map-dialog">
-    <div class="dialog-head"><div><span class="eyebrow">MAPA COMPLETO</span><h2>Etapas da trilha atual</h2><p>Clique em qualquer etapa para ir direto ao assunto.</p></div><button data-close-dialog aria-label="Fechar">×</button></div>
+    <div class="dialog-head">
+      <div>
+        <span class="eyebrow">MAPA DAS AULAS</span>
+        <h2>Etapas da trilha atual</h2>
+        <p>Clique em qualquer assunto para ir direto à explicação.</p>
+      </div>
+      <button data-close-dialog aria-label="Fechar">×</button>
+    </div>
     <div id="mapContent" class="map-content"></div>
   </dialog>
 
-  <div id="mobileCoachToggle" class="mobile-coach-toggle">Explicação <span id="mobileStepCount"></span></div>
-  <script type="module" src="/treinamento/js/treinamento.js?v=1.0.0"></script>
+  <script type="module" src="./js/treinamento.js?v=2.0.0"></script>
 </body>
 </html>

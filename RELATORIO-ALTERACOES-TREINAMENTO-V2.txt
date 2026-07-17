@@ -1,0 +1,41 @@
+GLAMORE JOIAS — TREINAMENTO PROFISSIONAL V2
+
+PROBLEMAS CORRIGIDOS
+- Explicações vagas e excessivamente técnicas.
+- Explicação estreita e visualmente disputando espaço com o sistema.
+- Balão flutuante cobrindo partes da tela demonstrada.
+- Perguntas misturadas com a aula atual, deixando a interface carregada.
+- Tempo automático curto para leitura.
+
+NOVA DIDÁTICA
+Todas as 57 aulas agora apresentam:
+1. Explicação em palavras simples.
+2. O que o usuário faz.
+3. O que o sistema faz.
+4. Resultado esperado.
+5. Atenção principal.
+6. Rastreabilidade.
+7. Explicação técnica opcional.
+
+LAYOUT
+- Explicação em painel exclusivo à esquerda.
+- Sistema demonstrativo em painel exclusivo à direita.
+- Nenhum balão de explicação aparece sobre o sistema.
+- Em telas menores, a explicação aparece antes da demonstração.
+- Área Perguntar separada em outra aba.
+- Cursor animado e destaque dourado preservados.
+
+SEGURANÇA
+- Dados simulados locais.
+- Sem Firebase oficial.
+- Sem API Key oficial.
+- Ações operacionais bloqueadas na demonstração.
+- Repositório oficial GlamoreJoias não é alterado.
+
+VALIDAÇÕES
+- 57 aulas com seis campos didáticos completos.
+- Sintaxe JavaScript validada.
+- Testes estruturais aprovados.
+- Referência ../index.html ausente.
+- Balão sobreposto antigo ausente.
+- Publicação HTTP local validada.
