@@ -1,23 +1,33 @@
-# Glamore Joias — Treinamento Profissional Responsivo V7
+# Ateliê Digital de Joias — Treinamento Prático Final
 
-Esta versão foi preparada para computador, notebook, tablet e celular.
+Este repositório é um treinamento separado do sistema oficial.
 
-## Comportamento automático
+## O que esta versão ensina
 
-- Computador e notebook: sistema à esquerda e explicação à direita.
-- Tablet em retrato: sistema acima e painel de instruções abaixo.
-- Celular em retrato: sistema, instrução e controles permanecem dentro da mesma tela.
-- Celular em paisagem: sistema e instrução ficam lado a lado.
-- Tela com pouca altura: os controles são compactados automaticamente.
-- Teclado do celular: a altura é recalculada com `visualViewport`.
+1. Menu, perfis e Painel.
+2. Importação do inventário.
+3. Entrada manual no estoque.
+4. Venda por PDF.
+5. Venda parcial e alerta.
+6. Produção aprovada e produção pronta.
+7. Joias, clientes e realidade aumentada.
+8. Relatórios, backup e Auditoria.
+9. Estornos na ordem correta.
+10. Usuários, cargos e regras.
 
-Não existe rolagem da página durante a aula. Quando um texto é longo, somente a área de instrução possui rolagem interna.
+## Publicação no GitHub Pages
 
-## Publicação
+1. Apague os arquivos antigos do repositório `treinamento`.
+2. Extraia o ZIP.
+3. Envie todo o conteúdo extraído para a raiz.
+4. Não envie o ZIP fechado.
+5. Abra:
+   - `https://tsvalencio-ia.github.io/treinamento/`
+   - `https://tsvalencio-ia.github.io/treinamento/verificar.html`
 
-Use exclusivamente no repositório separado `tsvalencio-IA/treinamento`.
+## Segurança
 
-1. Apague os arquivos da versão anterior.
-2. Extraia este ZIP.
-3. Envie todo o conteúdo para a raiz do repositório.
-4. Abra `https://tsvalencio-ia.github.io/treinamento/verificar.html`.
+- Não usa o Firebase oficial.
+- Não contém credenciais.
+- Não altera estoque, vendas ou clientes reais.
+- Não modifica o repositório oficial GlamoreJoias.

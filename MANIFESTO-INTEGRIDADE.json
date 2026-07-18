@@ -1,31 +1,26 @@
 {
-  "produto": "GlamoreJoias-TREINAMENTO-PROFISSIONAL-RESPONSIVO-V7",
-  "versao": "7.0.1",
-  "destino": "repositorio separado tsvalencio-IA/treinamento",
-  "sistema_oficial_modificado": false,
+  "produto": "GlamoreJoias-TREINAMENTO-PRATICO-FINAL",
+  "versao": "10.0.0",
+  "repositorio_destino": "tsvalencio-IA/treinamento",
+  "repositorio_oficial_modificado": false,
   "firebase_oficial": false,
-  "mecanismos": [
-    "camera fixa 100dvh",
-    "localizacao exata sem fallback generico",
-    "scroll automatico interno",
-    "zoom do render real",
-    "spotlight calculado sobre o elemento",
-    "audio iniciado somente depois do enquadramento",
-    "legenda dinamica que evita o alvo",
-    "bloqueio de rolagem manual",
-    "pausa segura quando um elemento nao e encontrado"
-  ],
-  "narracao": "ensina somente como usar o sistema, sem explicar o motor do treinamento",
-  "layout": "estudio profissional em duas áreas, sem texto sobre o sistema",
-  "camera": "pan e zoom reais com centralização do alvo",
-  "sobreposicao": "instruções em painel separado; não cobrem o sistema",
-  "responsividade": {
-    "computador": "tela e instrução lado a lado",
-    "tablet_retrato": "sistema acima; instrução e controles abaixo em duas áreas",
-    "celular_retrato": "sistema e instrução na mesma tela, sem rolagem externa",
-    "celular_paisagem": "sistema e painel lado a lado com controles compactos",
-    "teclado_virtual": "visualViewport ajusta a altura disponível"
-  },
-  "arquivos_oficiais_modificados": false,
-  "safe_area": "cabeçalho e margens consideram notch, barra inferior e modo instalado"
+  "aulas": 10,
+  "modelo": "simulador controlado com alvos exclusivos; não depende de localizar textos dinâmicos",
+  "fluxos": [
+    "inventario",
+    "entrada_manual",
+    "venda",
+    "venda_parcial",
+    "alerta",
+    "producao_aprovada",
+    "producao_pronta",
+    "excedente",
+    "relatorios",
+    "auditoria",
+    "estorno_venda",
+    "estorno_inventario",
+    "corrigir_status_pdf",
+    "estorno_producao",
+    "usuarios_cargos_regras"
+  ]
 }

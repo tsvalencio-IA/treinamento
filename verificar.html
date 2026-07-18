@@ -1,17 +1,13 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Verificar V7</title><style>body{font:16px system-ui;background:#eef1f5;padding:25px;color:#172033}.box{max-width:850px;margin:auto;background:#fff;padding:25px;border-radius:18px}li{margin:9px 0}.ok{color:#087443}.bad{color:#b42318}</style></head><body><div class="box"><h1>Verificação do Treinamento Responsivo V7</h1><ol id="list"></ol><h2 id="result">Verificando...</h2></div><script type="module">
-const tests=[
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Verificação do Treinamento</title><style>body{font:16px system-ui;background:#eef1f5;padding:24px;color:#172033}.box{max-width:900px;margin:auto;background:#fff;padding:24px;border-radius:18px}.ok{color:#087443}.bad{color:#b42318}li{margin:9px 0}</style></head><body><div class="box"><h1>Verificação do Treinamento Final</h1><ol id="checks"></ol><h2 id="result">Verificando...</h2><p>Esta página verifica arquivos, responsividade, dados locais e estrutura do roteiro.</p></div><script type="module">
+const checks=[
 ["Página principal",()=>fetch("./index.html").then(r=>r.ok)],
-["Viewport dinâmico",()=>fetch("./js/treinamento.js").then(r=>r.text()).then(t=>t.includes("visualViewport")&&t.includes("--app-height"))],
-["Computador responsivo",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("clamp(320px,27vw,390px)"))],
-["Tablet em retrato",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("max-width:1100px")&&t.includes("orientation:portrait"))],
-["Celular em retrato",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("max-width:760px")&&t.includes("55fr"))],
-["Paisagem de pouca altura",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("max-height:580px")&&t.includes("orientation:landscape"))],
-["Tela extremamente baixa",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("max-height:430px"))],
-["Ajustes móveis",()=>Promise.all([fetch("./index.html").then(r=>r.text()),fetch("./js/treinamento.js").then(r=>r.text())]).then(([h,j])=>h.includes("settingsScrim")&&j.includes("openSettings"))],
-["Diálogo com altura visual",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("calc(var(--app-height) - 24px)"))],
-["Dados locais",()=>fetch("./sistema/js/firebaseClient.js").then(r=>r.text()).then(t=>t.includes('mode: "treinamento_local"'))],
-["Sem Firebase oficial",()=>fetch("./sistema/js/config.js").then(r=>r.text()).then(t=>!t.includes("firebaseio.com")&&!t.includes("apiKey"))],
-["Roteiro completo",()=>Promise.all([fetch("./js/conhecimento.js").then(r=>r.text()),fetch("./js/roteiro-sincronizado.js").then(r=>r.text())]).then(([a,b])=>a.includes("MANUAL_TOUR")&&b.includes("SYNC_TARGETS"))]
+["CSS responsivo",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("@media(max-width:680px)")&&t.includes("orientation:landscape"))],
+["Roteiro prático",()=>fetch("./js/dados.js").then(r=>r.text()).then(t=>t.includes("Produção aprovada e produção pronta")&&t.includes("Estornos na ordem correta"))],
+["Motor do treinamento",()=>fetch("./js/treinamento.js").then(r=>r.text()).then(t=>t.includes("__GLAMORE_TRAINING_SELFTEST__")&&t.includes("data-training-id"))],
+["Perguntas verificadas",()=>fetch("./js/dados.js").then(r=>r.text()).then(t=>t.includes("Corrigir status do PDF")&&t.includes("Quantidade e peso são independentes"))],
+["Sem Firebase oficial",()=>Promise.all([fetch("./js/treinamento.js").then(r=>r.text()),fetch("./js/dados.js").then(r=>r.text())]).then(([a,b])=>!a.includes("firebaseio.com")&&!b.includes("firebaseio.com")&&!a.includes("apiKey"))],
+["GitHub Pages",()=>fetch("./.nojekyll").then(r=>r.ok)],
+["Manifesto",()=>fetch("./MANIFESTO-INTEGRIDADE.json").then(r=>r.json()).then(j=>j.firebase_oficial===false&&j.repositorio_oficial_modificado===false)]
 ];
-let ok=0;for(const [name,fn] of tests){let pass=false;try{pass=await fn()}catch{};if(pass)ok++;document.querySelector("#list").insertAdjacentHTML("beforeend",`<li class="${pass?"ok":"bad"}">${pass?"✓":"✗"} ${name}</li>`)}document.querySelector("#result").textContent=ok===tests.length?`APROVADO — ${ok}/${tests.length}`:`REPROVADO — ${ok}/${tests.length}`;
+let ok=0;for(const [name,fn] of checks){let pass=false;try{pass=await fn()}catch{};if(pass)ok++;document.querySelector("#checks").insertAdjacentHTML("beforeend",`<li class="${pass?"ok":"bad"}">${pass?"✓":"✗"} ${name}</li>`)}document.querySelector("#result").textContent=ok===checks.length?`APROVADO — ${ok}/${checks.length}`:`REPROVADO — ${ok}/${checks.length}`;
 </script></body></html>

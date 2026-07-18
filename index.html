@@ -3,214 +3,160 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="Treinamento completo e responsivo do Ateliê Digital de Joias.">
-  <title>Treinamento Profissional | Ateliê Digital de Joias</title>
-  <link rel="stylesheet" href="./css/treinamento.css?v=7.0.0">
+  <meta name="theme-color" content="#0c1628">
+  <meta name="description" content="Treinamento prático completo do Ateliê Digital de Joias.">
+  <title>Treinamento Prático | Ateliê Digital de Joias</title>
+  <link rel="stylesheet" href="./css/treinamento.css?v=10.0.0">
 </head>
 <body>
-  <div class="course-app" id="videoCourse">
-    <header class="course-header">
-      <div class="brand-block">
-        <div class="brand-symbol">◆</div>
+  <div class="training-app" id="trainingApp">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark">◆</span>
         <div>
           <strong>Ateliê Digital de Joias</strong>
-          <span>Treinamento profissional</span>
+          <small>Treinamento prático completo</small>
         </div>
       </div>
 
-      <div class="header-lesson">
-        <span id="chapterLabel">COMEÇO</span>
-        <strong id="stepTitle">Escolha o assunto que deseja aprender</strong>
-        <small><span id="stepCount">0 / 0</span> · <span id="cueCount">passo 0 / 0</span></small>
+      <div class="lesson-title">
+        <small id="lessonChapter">INÍCIO</small>
+        <strong id="lessonTitle">Escolha uma aula</strong>
+        <span id="lessonPosition">0 de 0</span>
       </div>
 
-      <nav class="header-actions" aria-label="Ferramentas do treinamento">
-        <button id="mapBtn" title="Lista de aulas">Aulas</button>
-        <button id="summaryBtn" title="Resumo da aula">Resumo</button>
-        <button id="qaBtn" title="Perguntar ao sistema">Perguntar</button>
-        <button id="settingsBtn" title="Ajustes">Ajustes</button>
-        <button id="voiceBtn" aria-pressed="true" title="Ligar ou desligar o áudio">🔊 Áudio</button>
-        <button id="fullscreenBtn" title="Tela cheia">⛶</button>
+      <nav class="top-actions" aria-label="Ferramentas">
+        <button id="lessonsButton" title="Aulas">☰ <span>Aulas</span></button>
+        <button id="questionsButton" title="Perguntas">? <span>Perguntas</span></button>
+        <button id="audioButton" title="Áudio" aria-pressed="true">🔊 <span>Áudio</span></button>
+        <button id="fullscreenButton" title="Tela cheia">⛶</button>
       </nav>
     </header>
 
-    <main class="lesson-studio">
-      <section class="system-column">
-        <div class="screen-titlebar">
+    <main class="studio">
+      <section class="system-shell">
+        <div class="system-bar">
           <div>
-            <span class="screen-live-dot"></span>
-            <strong>Tela do sistema</strong>
-            <small id="frameStatus">Aguardando o início.</small>
+            <span class="online-dot"></span>
+            <strong>Ateliê Digital — ambiente de treinamento</strong>
           </div>
-          <span class="training-badge">AMBIENTE DE TREINAMENTO</span>
+          <span id="systemStatus">Dados demonstrativos</span>
         </div>
 
-        <div class="video-stage" id="videoStage">
-          <div class="camera-frame" id="cameraFrame">
-            <iframe id="systemFrame" title="Ateliê Digital em modo de treinamento" src="./sistema/index.html#/dashboard"></iframe>
-          </div>
-
-          <div class="screen-shade top" id="shadeTop"></div>
-          <div class="screen-shade right" id="shadeRight"></div>
-          <div class="screen-shade bottom" id="shadeBottom"></div>
-          <div class="screen-shade left" id="shadeLeft"></div>
-          <div class="target-ring" id="targetRing"></div>
-          <div class="target-label" id="targetLabel">Item da aula</div>
-          <div class="sim-cursor" id="simCursor" aria-hidden="true"></div>
-          <div class="click-ripple" id="clickRipple" aria-hidden="true"></div>
-
-          <div class="stage-waiting" id="stageWaiting">
-            <div class="waiting-card">
-              <div class="waiting-icon">▶</div>
-              <span>ATELIÊ DIGITAL DE JOIAS</span>
-              <strong>Aprenda o sistema completo, passo a passo</strong>
-              <p>Escolha uma trilha. Cada aula mostrará exatamente onde clicar, o que preencher e como conferir o resultado.</p>
-              <button id="chooseTrackBtn">Escolher treinamento</button>
+        <div class="system-window" id="systemWindow">
+          <aside class="app-sidebar" id="appSidebar">
+            <div class="app-brand">
+              <span>◆</span>
+              <div><strong>Ateliê Digital</strong><small>Estoque · Produção · Venda</small></div>
             </div>
+            <nav id="appMenu"></nav>
+            <div class="profile-card">
+              <span>VG</span>
+              <div><strong>Vitor Gomes</strong><small>Administrador Master</small></div>
+            </div>
+          </aside>
+
+          <div class="app-main">
+            <header class="app-header">
+              <button class="mobile-menu" id="mobileMenuButton">☰</button>
+              <div><small id="screenEyebrow">OPERAÇÃO</small><h1 id="screenTitle">Painel</h1></div>
+              <span class="demo-pill">DADOS SIMULADOS</span>
+            </header>
+            <section class="app-content" id="screenContent"></section>
           </div>
+
+          <div class="focus-mask" id="focusMask" aria-hidden="true"></div>
+          <div class="focus-ring" id="focusRing" aria-hidden="true"></div>
+          <div class="focus-label" id="focusLabel" aria-hidden="true"></div>
+          <div class="pointer" id="pointer" aria-hidden="true"></div>
+          <div class="click-effect" id="clickEffect" aria-hidden="true"></div>
         </div>
       </section>
 
-      <aside class="instructor-panel">
-        <div class="panel-copy">
-          <div class="panel-top">
-            <span class="panel-eyebrow" id="narrationTarget">PASSO ATUAL</span>
-            <span class="panel-counter" id="narrationProgress">Aguardando</span>
-          </div>
-
-          <div class="instruction-body">
-            <div class="instruction-icon" id="instructionIcon">1</div>
-            <p id="spokenNow">Escolha uma trilha e pressione Iniciar.</p>
-            <div class="word-progress"><span id="wordProgress"></span></div>
-          </div>
-
-          <div class="lesson-help">
-            <strong>Durante esta aula</strong>
-            <p>O item citado ficará destacado na tela. A instrução só avança depois que a explicação terminar.</p>
-          </div>
+      <aside class="teacher-panel">
+        <div class="teacher-head">
+          <span id="sceneType">PASSO ATUAL</span>
+          <small id="scenePosition">Passo 0 de 0</small>
         </div>
 
-        <div class="panel-actions">
-          <div class="panel-progress">
-            <span>Progresso da trilha</span>
-            <div class="timeline"><span id="progressBar"></span></div>
-          </div>
-
-          <div class="primary-controls">
-            <button id="prevCueBtn" title="Passo anterior">← Passo</button>
-            <button id="playBtn" class="play">▶ Iniciar</button>
-            <button id="nextCueBtn" title="Próximo passo">Passo →</button>
-          </div>
-
-          <div class="secondary-controls">
-            <button id="prevStepBtn">← Aula</button>
-            <button id="repeatBtn">↻ Repetir</button>
-            <button id="nextStepBtn">Aula →</button>
-          </div>
-
-          <div class="panel-settings" id="panelSettings" aria-label="Ajustes do treinamento">
-            <button type="button" class="close-settings" id="closeSettingsBtn" aria-label="Fechar ajustes">×</button>
-            <label>Velocidade
-              <select id="speedSelect">
-                <option value="0.86">Mais devagar</option>
-                <option value="1" selected>Normal</option>
-                <option value="1.12">Mais rápido</option>
-              </select>
-            </label>
-            <label>Perfil
-              <select id="roleSelect">
-                <option value="dono">Administrador Master</option>
-                <option value="gerente">Gerente</option>
-                <option value="vendedor">Vendedor</option>
-                <option value="atendente">Atendente</option>
-                <option value="entregador">Entregador</option>
-              </select>
-            </label>
-          </div>
-
-          <a class="official-link" href="https://glamore-joias.vercel.app/" target="_blank" rel="noopener">Abrir sistema oficial ↗</a>
+        <div class="teacher-copy">
+          <div class="step-number" id="stepNumber">1</div>
+          <p id="instructionText">Escolha uma aula para começar.</p>
+          <div class="speech-progress"><span id="speechProgress"></span></div>
         </div>
+
+        <div class="practical-note" id="practicalNote">
+          <strong>Objetivo</strong>
+          <p>Aprender o fluxo real do sistema, do lançamento até a conferência e a auditoria.</p>
+        </div>
+
+        <div class="lesson-progress"><span id="lessonProgressBar"></span></div>
+
+        <div class="main-controls">
+          <button id="previousSceneButton">← Passo</button>
+          <button id="playButton" class="primary">▶ Iniciar</button>
+          <button id="nextSceneButton">Passo →</button>
+        </div>
+
+        <div class="extra-controls">
+          <button id="previousLessonButton">← Aula</button>
+          <button id="repeatButton">↻ Repetir</button>
+          <button id="nextLessonButton">Aula →</button>
+        </div>
+
+        <div class="settings">
+          <label>Velocidade
+            <select id="speedSelect">
+              <option value="0.86">Mais devagar</option>
+              <option value="1" selected>Normal</option>
+              <option value="1.12">Mais rápido</option>
+            </select>
+          </label>
+          <label>Perfil mostrado
+            <select id="roleSelect">
+              <option value="dono">Administrador Master</option>
+              <option value="gerente">Gerente</option>
+              <option value="vendedor">Vendedor</option>
+              <option value="atendente">Atendente</option>
+              <option value="entregador">Entregador</option>
+            </select>
+          </label>
+        </div>
+
+        <a class="official-link" href="https://glamore-joias.vercel.app/" target="_blank" rel="noopener">Abrir sistema oficial ↗</a>
       </aside>
     </main>
   </div>
 
-  <div class="settings-scrim" id="settingsScrim" aria-hidden="true"></div>
-
-  <dialog id="trackDialog" class="course-dialog">
-    <div class="dialog-head">
-      <div>
-        <span class="eyebrow">ESCOLHA O TREINAMENTO</span>
-        <h2>O que você quer aprender?</h2>
-        <p>Comece pela visão geral ou selecione uma trilha relacionada à sua função.</p>
-      </div>
-      <button data-close-dialog aria-label="Fechar">×</button>
+  <dialog id="lessonDialog" class="modal">
+    <div class="modal-head">
+      <div><small>ESCOLHA UMA AULA</small><h2>Treinamento prático do sistema completo</h2><p>As aulas seguem situações reais de trabalho e mostram cada resultado na tela.</p></div>
+      <button data-close>×</button>
     </div>
-    <div id="trackGrid" class="track-grid"></div>
+    <div id="lessonGrid" class="lesson-grid"></div>
   </dialog>
 
-  <dialog id="mapDialog" class="course-dialog">
-    <div class="dialog-head">
-      <div>
-        <span class="eyebrow">LISTA DE AULAS</span>
-        <h2>Escolha uma função do sistema</h2>
-        <p>Abra diretamente a aula que precisa consultar.</p>
-      </div>
-      <button data-close-dialog aria-label="Fechar">×</button>
+  <dialog id="questionDialog" class="modal question-modal">
+    <div class="modal-head">
+      <div><small>CENTRAL DE DÚVIDAS</small><h2>Pergunte sobre o sistema</h2><p>As respostas abaixo foram escritas para regras específicas do Ateliê Digital.</p></div>
+      <button data-close>×</button>
     </div>
-    <div id="mapContent" class="map-content"></div>
-  </dialog>
-
-  <dialog id="summaryDialog" class="course-dialog detail-dialog">
-    <div class="dialog-head">
-      <div>
-        <span class="eyebrow">RESUMO DA AULA</span>
-        <h2 id="summaryTitle">Aula</h2>
-      </div>
-      <button data-close-dialog aria-label="Fechar">×</button>
-    </div>
-    <p id="lessonLead" class="lesson-lead"></p>
-    <div class="lesson-grid">
-      <article><small>COMO USAR</small><p id="lessonUser"></p></article>
-      <article><small>O QUE ACONTECE DEPOIS</small><p id="lessonSystem"></p></article>
-      <article><small>COMO CONFERIR</small><p id="lessonResult"></p></article>
-      <article class="attention"><small>CUIDADO</small><p id="lessonAttention"></p></article>
-    </div>
-    <details>
-      <summary>Detalhes e rastreabilidade</summary>
-      <p id="lessonAudit"></p>
-      <p id="stepBody"></p>
-      <div id="stepSource"></div>
-    </details>
-  </dialog>
-
-  <dialog id="qaDialog" class="course-dialog qa-dialog">
-    <div class="dialog-head">
-      <div>
-        <span class="eyebrow">PERGUNTAR AO SISTEMA</span>
-        <h2>Tire uma dúvida sobre a operação</h2>
-        <p>As respostas usam o código, as regras e os testes incluídos neste treinamento.</p>
-      </div>
-      <button data-close-dialog aria-label="Fechar">×</button>
-    </div>
-    <div id="quickQuestions" class="quick-questions"></div>
-    <div id="qaMessages" class="qa-messages">
-      <div class="qa-system">Escreva a dúvida em palavras simples. Quando não houver evidência segura, a resposta informa isso claramente.</div>
-    </div>
-    <form id="qaForm" class="qa-form">
-      <textarea id="qaInput" rows="4" placeholder="Ex.: Como a produção pronta atende uma venda pendente?"></textarea>
-      <button type="submit">Responder</button>
+    <div id="questionChips" class="question-chips"></div>
+    <div id="messages" class="messages"><div class="message answer">Escolha uma pergunta pronta ou escreva sua dúvida.</div></div>
+    <form id="questionForm">
+      <textarea id="questionInput" rows="3" placeholder="Ex.: Por que não consigo estornar um inventário?"></textarea>
+      <button>Responder</button>
     </form>
   </dialog>
 
-  <div class="fatal-scene" id="fatalScene" hidden>
-    <div>
-      <strong>Não foi possível mostrar este item</strong>
-      <p id="fatalSceneText"></p>
-      <button id="retrySceneBtn">Tentar novamente</button>
-      <button id="skipSceneBtn">Ir para o próximo passo</button>
+  <dialog id="resultDialog" class="modal result-modal">
+    <div class="modal-head">
+      <div><small>RESULTADO DA OPERAÇÃO</small><h2 id="resultTitle">Resultado</h2></div>
+      <button data-close>×</button>
     </div>
-  </div>
+    <div id="resultBody"></div>
+  </dialog>
 
-  <script type="module" src="./js/treinamento.js?v=7.0.0"></script>
+  <script type="module" src="./js/treinamento.js?v=10.0.0"></script>
 </body>
 </html>
