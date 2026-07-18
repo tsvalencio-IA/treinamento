@@ -1,0 +1,39 @@
+RELATÓRIO — TREINAMENTO PROFISSIONAL V6
+
+PROBLEMAS VISUAIS IDENTIFICADOS NA IMAGEM DA V5
+- destaque em forma de faixa gigante;
+- tela quase toda escura;
+- legenda cobrindo a área do sistema;
+- controles espalhados pela largura da página;
+- aparência de ferramenta de teste, não de treinamento;
+- falta de centralização real do elemento citado.
+
+CORREÇÕES V6
+1. Layout de estúdio:
+   - sistema à esquerda;
+   - instrução e controles à direita;
+   - nenhuma legenda sobre o sistema.
+
+2. Nova câmera:
+   - rola a tela interna;
+   - calcula o centro do elemento;
+   - aplica tradução horizontal e vertical;
+   - aplica zoom proporcional ao tamanho;
+   - mantém o alvo dentro da área visível.
+
+3. Destaque profissional:
+   - escurecimento leve;
+   - contorno dourado;
+   - cursor visível;
+   - faixa de largura total reduzida para uma área central útil.
+
+4. Interface:
+   - controles organizados;
+   - passo atual em texto grande;
+   - progresso da trilha;
+   - botões principais separados das configurações.
+
+5. Segurança:
+   - dados demonstrativos locais;
+   - nenhuma conexão com o Firebase oficial;
+   - repositório GlamoreJoias não alterado.

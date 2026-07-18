@@ -1,28 +1,23 @@
-# Glamore Joias — Treinamento Completo V5
+# Glamore Joias — Treinamento Profissional Responsivo V7
 
-Treinamento independente para o repositório `tsvalencio-IA/treinamento`.
+Esta versão foi preparada para computador, notebook, tablet e celular.
 
-## Objetivo
+## Comportamento automático
 
-Ensinar diretamente como usar o Ateliê Digital de Joias:
+- Computador e notebook: sistema à esquerda e explicação à direita.
+- Tablet em retrato: sistema acima e painel de instruções abaixo.
+- Celular em retrato: sistema, instrução e controles permanecem dentro da mesma tela.
+- Celular em paisagem: sistema e instrução ficam lado a lado.
+- Tela com pouca altura: os controles são compactados automaticamente.
+- Teclado do celular: a altura é recalculada com `visualViewport`.
 
-- onde clicar;
-- o que preencher;
-- como executar cada rotina;
-- como conferir o resultado;
-- quais cuidados devem ser respeitados;
-- onde consultar usuário, data, hora, cargo e documento relacionado.
-
-A narração não explica o funcionamento do próprio treinamento. Ela ensina somente o sistema.
+Não existe rolagem da página durante a aula. Quando um texto é longo, somente a área de instrução possui rolagem interna.
 
 ## Publicação
 
-1. Apague os arquivos da versão anterior no repositório de treinamento.
+Use exclusivamente no repositório separado `tsvalencio-IA/treinamento`.
+
+1. Apague os arquivos da versão anterior.
 2. Extraia este ZIP.
 3. Envie todo o conteúdo para a raiz do repositório.
-4. Não envie ao repositório oficial GlamoreJoias.
-5. Abra `https://tsvalencio-ia.github.io/treinamento/verificar.html`.
-
-## Segurança
-
-O treinamento usa dados locais demonstrativos e não grava no Firebase oficial.
+4. Abra `https://tsvalencio-ia.github.io/treinamento/verificar.html`.

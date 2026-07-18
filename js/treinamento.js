@@ -14,7 +14,6 @@ const ring = $("targetRing");
 const targetLabelEl = $("targetLabel");
 const cursor = $("simCursor");
 const ripple = $("clickRipple");
-const narration = $("narrationCard");
 const spokenNow = $("spokenNow");
 const narrationTarget = $("narrationTarget");
 const narrationProgress = $("narrationProgress");
@@ -22,6 +21,8 @@ const wordProgress = $("wordProgress");
 const frameStatus = $("frameStatus");
 const stageWaiting = $("stageWaiting");
 const fatalScene = $("fatalScene");
+const instructionIcon = $("instructionIcon");
+const settingsScrim = $("settingsScrim");
 
 let activeTrack = null;
 let steps = [];
@@ -37,6 +38,46 @@ let activeUtterance = null;
 let currentTarget = null;
 let currentScale = 1;
 let sourceIndexPromise = null;
+
+let viewportRefreshTimer = 0;
+
+function updateViewportMetrics(){
+  const vv = window.visualViewport;
+  const width = Math.round(vv?.width || window.innerWidth || document.documentElement.clientWidth);
+  const height = Math.round(vv?.height || window.innerHeight || document.documentElement.clientHeight);
+  const layoutHeight = Math.round(window.innerHeight || height);
+  const keyboardOpen = Boolean(vv && layoutHeight - height > 140);
+
+  document.documentElement.style.setProperty("--app-height", `${Math.max(320, height)}px`);
+  document.documentElement.style.setProperty("--app-width", `${Math.max(280, width)}px`);
+  document.documentElement.dataset.orientation = width > height ? "landscape" : "portrait";
+  document.documentElement.classList.toggle("keyboard-open", keyboardOpen);
+}
+
+function scheduleViewportRefresh(){
+  updateViewportMetrics();
+  clearTimeout(viewportRefreshTimer);
+  viewportRefreshTimer = window.setTimeout(async () => {
+    updateViewportMetrics();
+    if (!currentTarget) return;
+    try {
+      const r = currentTarget.bridge.rect(currentTarget.el);
+      const shot = cameraShot(r, currentScale);
+      cameraFrame.style.transform = `translate3d(${shot.tx}px,${shot.ty}px,0) scale(${currentScale})`;
+      currentTarget = {...currentTarget, rect:shot.rect, tx:shot.tx, ty:shot.ty};
+      paintSpotlight(shot.rect, cueLabel(currentTarget.cue));
+    } catch {}
+  }, 180);
+}
+
+function openSettings(){
+  document.documentElement.classList.add("settings-open");
+  settingsScrim?.setAttribute("aria-hidden", "false");
+}
+function closeSettings(){
+  document.documentElement.classList.remove("settings-open");
+  settingsScrim?.setAttribute("aria-hidden", "true");
+}
 
 const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 const normalize = (value = "") => String(value).normalize("NFD")
@@ -199,7 +240,7 @@ async function locateTarget(step, cue){
 
 function resetCamera(){
   currentScale = 1;
-  cameraFrame.style.transform = "scale(1)";
+  cameraFrame.style.transform = "translate3d(0px,0px,0) scale(1)";
   ring.classList.remove("active");
   targetLabelEl.classList.remove("active");
   cursor.classList.remove("active");
@@ -208,21 +249,49 @@ function resetCamera(){
 }
 
 function chooseScale(rect){
-  const area = rect.width * rect.height;
-  if (rect.width < 90 || rect.height < 34) return 1.22;
-  if (area < 26000) return 1.15;
-  if (area < 70000) return 1.08;
+  const stage = videoStage.getBoundingClientRect();
+  const widthRatio = rect.width / Math.max(1, stage.width);
+  const heightRatio = rect.height / Math.max(1, stage.height);
+  if (rect.width < 110 || rect.height < 36) return 1.34;
+  if (widthRatio < .28 && heightRatio < .22) return 1.22;
+  if (widthRatio < .52 && heightRatio < .34) return 1.12;
   return 1.02;
 }
 
-function scaledRect(innerRect, scale){
-  const stageRect = videoStage.getBoundingClientRect();
-  const frameRect = frame.getBoundingClientRect();
-  const fw = frameRect.width, fh = frameRect.height;
-  const x = (innerRect.left - fw/2) * scale + fw/2 + (frameRect.left - stageRect.left);
-  const y = (innerRect.top - fh/2) * scale + fh/2 + (frameRect.top - stageRect.top);
-  return { left:x, top:y, width:innerRect.width*scale, height:innerRect.height*scale,
-    right:x+innerRect.width*scale, bottom:y+innerRect.height*scale };
+function cameraShot(innerRect, scale){
+  const stage = videoStage.getBoundingClientRect();
+  const width = stage.width;
+  const height = stage.height;
+  const targetX = innerRect.left + innerRect.width / 2;
+  const targetY = innerRect.top + innerRect.height / 2;
+
+  let tx = width / 2 - targetX * scale;
+  let ty = height / 2 - targetY * scale;
+
+  const minX = width - width * scale;
+  const minY = height - height * scale;
+  tx = Math.min(0, Math.max(minX, tx));
+  ty = Math.min(0, Math.max(minY, ty));
+
+  const raw = {
+    left: innerRect.left * scale + tx,
+    top: innerRect.top * scale + ty,
+    width: innerRect.width * scale,
+    height: innerRect.height * scale
+  };
+  raw.right = raw.left + raw.width;
+  raw.bottom = raw.top + raw.height;
+
+  // Botões e campos de largura total são destacados ao redor do texto/centro,
+  // evitando a faixa gigante que apareceu nas versões anteriores.
+  if (raw.width > width * .72 && raw.height < 120) {
+    const focusWidth = Math.min(width * .58, 520);
+    raw.left = width / 2 - focusWidth / 2;
+    raw.width = focusWidth;
+    raw.right = raw.left + raw.width;
+  }
+
+  return { tx, ty, rect: raw };
 }
 
 function paintSpotlight(rect, label){
@@ -253,12 +322,6 @@ function paintSpotlight(rect, label){
   const cursorY = Math.min(stage.height-30, r.top + Math.max(20, Math.min(r.height*.58,r.height-14)));
   cursor.style.left = `${cursorX}px`; cursor.style.top = `${cursorY}px`; cursor.classList.add("active");
 
-  const captionHeight = narration.getBoundingClientRect().height || 120;
-  if (r.bottom > stage.height * .58 && r.top > captionHeight + 36){
-    narration.classList.remove("bottom"); narration.classList.add("top");
-  }else{
-    narration.classList.remove("top"); narration.classList.add("bottom");
-  }
 }
 
 async function animateClick(){
@@ -280,15 +343,17 @@ async function focusCue(step, cue){
   const {bridge,el} = located;
   try{
     await bridge.scrollTo(el);
-    await sleep(180);
+    await sleep(220);
     const before = bridge.rect(el);
     currentScale = chooseScale(before);
-    cameraFrame.style.transform = `scale(${currentScale})`;
-    await sleep(560);
+    const shot = cameraShot(before, currentScale);
+    cameraFrame.style.transform = `translate3d(${shot.tx}px,${shot.ty}px,0) scale(${currentScale})`;
+    await sleep(650);
     const after = bridge.rect(el);
-    const rect = scaledRect(after,currentScale);
-    currentTarget = {bridge,el,cue,rect};
-    paintSpotlight(rect,cueLabel(cue));
+    const finalShot = cameraShot(after, currentScale);
+    cameraFrame.style.transform = `translate3d(${finalShot.tx}px,${finalShot.ty}px,0) scale(${currentScale})`;
+    currentTarget = {bridge,el,cue,rect:finalShot.rect,tx:finalShot.tx,ty:finalShot.ty};
+    paintSpotlight(finalShot.rect,cueLabel(cue));
     if (cue.click){
       await sleep(250); await animateClick();
       try{ bridge.safeActivate(el,cueLabel(cue)); }catch{}
@@ -351,7 +416,8 @@ async function presentCue(position,token,{narrate=true}={}){
   cueIndex=position; updateHeader();
   const step=currentStep(),cue=currentCue();
   narrationTarget.textContent=`PASSO ATUAL · ${cueLabel(cue)}`;
-  narrationProgress.textContent=`Cena ${cueIndex+1} de ${cues.length}`;
+  narrationProgress.textContent=`Passo ${cueIndex+1} de ${cues.length}`;
+  instructionIcon.textContent=String(cueIndex+1);
   spokenNow.textContent="Abrindo a função...";
   const ok=await focusCue(step,cue);
   if(!ok||token!==playbackToken)return false;
@@ -375,7 +441,7 @@ async function run(start=cueIndex){
   }
   if(!playing||token!==playbackToken)return;
   if(stepIndex>=steps.length-1){
-    stopPlayback(false);spokenNow.textContent="Trilha concluída. Use Aulas para rever uma função ou Perguntar para tirar uma dúvida.";return;
+    stopPlayback(false);spokenNow.textContent="Treinamento concluído. Você pode rever uma aula ou abrir a área de perguntas.";return;
   }
   stepIndex++;cueIndex=0;cues=buildCues(currentStep());fillSummary();updateHeader();
   saveProgress();resetCamera();await setFrame(currentStep());await run(0);
@@ -386,7 +452,7 @@ function stopPlayback(showPaused=true){
   if("speechSynthesis" in window)speechSynthesis.cancel();
   activeUtterance=null;
   $("playBtn").textContent="▶ Continuar";
-  if(showPaused)frameStatus.textContent="Videoaula pausada no item atual.";
+  if(showPaused)frameStatus.textContent="Aula pausada no passo atual.";
 }
 
 async function goStep(next){
@@ -465,6 +531,9 @@ function renderQuickQuestions(){
   document.querySelectorAll("#quickQuestions button").forEach(b=>b.onclick=()=>answerQuestion(b.textContent));
 }
 
+$("settingsBtn").onclick=openSettings;
+$("closeSettingsBtn").onclick=closeSettings;
+settingsScrim.onclick=closeSettings;
 $("chooseTrackBtn").onclick=()=>{$("trackDialog").showModal()};
 $("mapBtn").onclick=()=>{renderMap();$("mapDialog").showModal()};
 $("summaryBtn").onclick=()=>{fillSummary();$("summaryDialog").showModal()};
@@ -484,18 +553,23 @@ $("voiceBtn").onclick=()=>{
   if(!voice&&"speechSynthesis" in window)speechSynthesis.cancel();
 };
 $("fullscreenBtn").onclick=async()=>{if(!document.fullscreenElement)await $("videoCourse").requestFullscreen?.();else await document.exitFullscreen?.()};
-$("roleSelect").onchange=()=>{localStorage.setItem("glamore.training.role",$("roleSelect").value);lastContext="";goStep(stepIndex)};
+$("roleSelect").onchange=()=>{localStorage.setItem("glamore.training.role",$("roleSelect").value);lastContext="";closeSettings();goStep(stepIndex)};
 $("qaForm").onsubmit=e=>{e.preventDefault();const q=$("qaInput").value.trim();if(q){$("qaInput").value="";answerQuestion(q)}};
 document.querySelectorAll("[data-close-dialog]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
+document.addEventListener("keydown",event=>{if(event.key==="Escape")closeSettings()});
 
 window.addEventListener("message",event=>{
   if(event.data?.type==="training-user-scroll-blocked"||event.data?.type==="training-action-blocked"){
-    $("cameraMessage").classList.add("show");setTimeout(()=>$("cameraMessage").classList.remove("show"),1800);
+    frameStatus.textContent="Use os controles do treinamento para avançar.";
   }
 });
-window.addEventListener("resize",async()=>{if(currentTarget){await sleep(100);const r=currentTarget.bridge.rect(currentTarget.el);paintSpotlight(scaledRect(r,currentScale),cueLabel(currentTarget.cue))}});
-videoStage.addEventListener("wheel",e=>{e.preventDefault();$("cameraMessage").classList.add("show");setTimeout(()=>$("cameraMessage").classList.remove("show"),1800)},{passive:false});
+window.addEventListener("resize", scheduleViewportRefresh);
+window.addEventListener("orientationchange", scheduleViewportRefresh);
+window.visualViewport?.addEventListener("resize", scheduleViewportRefresh);
+window.visualViewport?.addEventListener("scroll", scheduleViewportRefresh);
+videoStage.addEventListener("wheel",e=>{e.preventDefault();frameStatus.textContent="Use os controles do treinamento para avançar.";},{passive:false});
 
+updateViewportMetrics();
 renderTracks();renderQuickQuestions();
 $("voiceBtn").textContent=voice?"🔊 Áudio ligado":"🔇 Áudio desligado";
 $("trackDialog").showModal();

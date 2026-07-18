@@ -1,0 +1,45 @@
+RELATÓRIO — TREINAMENTO PROFISSIONAL RESPONSIVO V7
+
+CORREÇÕES
+1. Altura real da tela
+   - usa 100dvh;
+   - usa visualViewport no celular;
+   - reage ao teclado virtual e à barra do navegador.
+
+2. Computador e notebook
+   - tela do sistema e painel de instrução lado a lado;
+   - largura do painel limitada para preservar a área do sistema.
+
+3. Tablet em retrato
+   - sistema na parte superior;
+   - painel inferior dividido entre explicação e controles;
+   - não exige rolagem da página.
+
+4. Celular em retrato
+   - sistema e explicação permanecem dentro da mesma tela;
+   - controles compactos;
+   - ajustes abrem em uma folha sobreposta;
+   - a página não sai do lugar.
+
+5. Celular e tablet em paisagem
+   - sistema e painel lado a lado;
+   - regras específicas para telas com pouca altura;
+   - em alturas extremas, os controles não essenciais são recolhidos.
+
+6. Diálogos
+   - lista de aulas, resumo e perguntas respeitam a altura visual disponível;
+   - área interna possui rolagem quando necessário.
+
+7. Câmera
+   - recalcula o enquadramento após rotação, redimensionamento,
+     abertura da barra do navegador e teclado virtual.
+
+SEGURANÇA
+- dados locais demonstrativos;
+- nenhuma conexão com o Firebase oficial;
+- repositório oficial GlamoreJoias não alterado.
+
+8. Notch e modo instalado
+   - cabeçalho aumenta automaticamente com safe-area-inset-top;
+   - margens inferiores respeitam safe-area-inset-bottom;
+   - celulares menores em paisagem usam ícones para evitar estouro horizontal.

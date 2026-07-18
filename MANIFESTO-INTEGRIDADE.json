@@ -1,6 +1,6 @@
 {
-  "produto": "GlamoreJoias-TREINAMENTO-COMPLETO-PROFISSIONAL-V5",
-  "versao": "5.0.0",
+  "produto": "GlamoreJoias-TREINAMENTO-PROFISSIONAL-RESPONSIVO-V7",
+  "versao": "7.0.1",
   "destino": "repositorio separado tsvalencio-IA/treinamento",
   "sistema_oficial_modificado": false,
   "firebase_oficial": false,
@@ -15,5 +15,17 @@
     "bloqueio de rolagem manual",
     "pausa segura quando um elemento nao e encontrado"
   ],
-  "narracao": "ensina somente como usar o sistema, sem explicar o motor do treinamento"
+  "narracao": "ensina somente como usar o sistema, sem explicar o motor do treinamento",
+  "layout": "estudio profissional em duas áreas, sem texto sobre o sistema",
+  "camera": "pan e zoom reais com centralização do alvo",
+  "sobreposicao": "instruções em painel separado; não cobrem o sistema",
+  "responsividade": {
+    "computador": "tela e instrução lado a lado",
+    "tablet_retrato": "sistema acima; instrução e controles abaixo em duas áreas",
+    "celular_retrato": "sistema e instrução na mesma tela, sem rolagem externa",
+    "celular_paisagem": "sistema e painel lado a lado com controles compactos",
+    "teclado_virtual": "visualViewport ajusta a altura disponível"
+  },
+  "arquivos_oficiais_modificados": false,
+  "safe_area": "cabeçalho e margens consideram notch, barra inferior e modo instalado"
 }
