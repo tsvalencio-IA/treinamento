@@ -1,21 +1,18 @@
 {
-  "pacote": "GlamoreJoias-TREINAMENTO-PROFISSIONAL-V3-SINCRONIZADO",
-  "versao": "3.0.0",
+  "produto": "GlamoreJoias-TREINAMENTO-VIDEOAULA-PROFISSIONAL-V4",
+  "versao": "4.0.0",
   "destino": "repositorio separado tsvalencio-IA/treinamento",
-  "rota": "https://tsvalencio-ia.github.io/treinamento/",
+  "sistema_oficial_modificado": false,
   "firebase_oficial": false,
-  "aulas": 57,
-  "cenas_sincronizadas": 222,
-  "motor": "destaque -> cursor -> frase -> fim do audio -> proximo alvo",
-  "temporizador_independente_do_audio": false,
-  "sobreposicao_da_explicacao": false,
-  "arquivos_principais": [
-    "index.html",
-    "css/treinamento.css",
-    "js/treinamento.js",
-    "js/roteiro-sincronizado.js",
-    "js/conhecimento.js",
-    "js/explicacoes.js",
-    "sistema/index.html"
+  "mecanismos": [
+    "camera fixa 100dvh",
+    "localizacao exata sem fallback generico",
+    "scroll automatico interno",
+    "zoom do render real",
+    "spotlight calculado sobre o elemento",
+    "audio iniciado somente depois do enquadramento",
+    "legenda dinamica que evita o alvo",
+    "bloqueio de rolagem manual",
+    "pausa segura quando um elemento nao e encontrado"
   ]
 }

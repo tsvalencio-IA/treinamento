@@ -1,0 +1,24 @@
+RELATÓRIO — TREINAMENTO VIDEOAULA PROFISSIONAL V4
+
+Problema corrigido:
+- a tela podia sair da área visível;
+- o usuário conseguia rolar e perder o item;
+- o áudio podia explicar enquanto o elemento não estava enquadrado;
+- o fallback genérico podia destacar uma área ampla;
+- a explicação lateral competia com a tela.
+
+Nova arquitetura:
+- sistema ocupa a área principal fixa;
+- câmera controla a rolagem interna;
+- cada cena localiza o elemento exato;
+- zoom e spotlight são calculados sobre o elemento real;
+- áudio começa somente depois do enquadramento;
+- a legenda muda de posição para não cobrir o alvo;
+- rolagem manual é bloqueada durante a aula;
+- elemento ausente pausa a aula;
+- resumo e perguntas ficam em janelas separadas.
+
+Base:
+- telas e app.js do ZIP real enviado;
+- Firebase oficial substituído por dados demonstrativos locais;
+- repositório oficial não é alterado.

@@ -4,944 +4,460 @@ import { synchronizedTargetsFor } from "./roteiro-sincronizado.js";
 
 const $ = (id) => document.getElementById(id);
 const frame = $("systemFrame");
-const frameStatus = $("frameStatus");
-const progressBar = $("progressBar");
-const chapterLabel = $("chapterLabel");
-const stepCount = $("stepCount");
-const stepTitle = $("stepTitle");
-const lessonLead = $("lessonLead");
-const lessonUser = $("lessonUser");
-const lessonSystem = $("lessonSystem");
-const lessonResult = $("lessonResult");
-const lessonAttention = $("lessonAttention");
-const lessonAudit = $("lessonAudit");
-const stepBody = $("stepBody");
-const stepSource = $("stepSource");
-const prevBtn = $("prevBtn");
-const nextBtn = $("nextBtn");
-const playBtn = $("playBtn");
-const speedSelect = $("speedSelect");
-const voiceBtn = $("voiceBtn");
-const reloadBtn = $("reloadBtn");
-const roleSelect = $("roleSelect");
-const trackDialog = $("trackDialog");
-const trackGrid = $("trackGrid");
-const mapDialog = $("mapDialog");
-const mapContent = $("mapContent");
-const qaForm = $("qaForm");
-const qaInput = $("qaInput");
-const qaMessages = $("qaMessages");
-const quickQuestions = $("quickQuestions");
-const simCursor = $("simCursor");
-const showTargetBtn = $("showTargetBtn");
-const stageLessonTitle = $("stageLessonTitle");
-const stageCaptionTitle = $("stageCaptionTitle");
-const stageCaptionText = $("stageCaptionText");
-const lessonTabBtn = $("lessonTabBtn");
-const qaTabBtn = $("qaTabBtn");
-const lessonPanel = $("lessonPanel");
-const qaPanel = $("qaPanel");
-const cueCount = $("cueCount");
+const cameraFrame = $("cameraFrame");
+const videoStage = $("videoStage");
+const shades = {
+  top: $("shadeTop"), right: $("shadeRight"),
+  bottom: $("shadeBottom"), left: $("shadeLeft")
+};
+const ring = $("targetRing");
+const targetLabelEl = $("targetLabel");
+const cursor = $("simCursor");
+const ripple = $("clickRipple");
+const narration = $("narrationCard");
 const spokenNow = $("spokenNow");
-const syncNow = $("syncNow");
-const repeatCueBtn = $("repeatCueBtn");
-const lessonCards = document.querySelector(".lesson-cards");
-const stageCard = document.querySelector(".stage-card");
+const narrationTarget = $("narrationTarget");
+const narrationProgress = $("narrationProgress");
+const wordProgress = $("wordProgress");
+const frameStatus = $("frameStatus");
+const stageWaiting = $("stageWaiting");
+const fatalScene = $("fatalScene");
 
 let activeTrack = null;
 let steps = [];
-let index = 0;
+let stepIndex = 0;
+let cueIndex = 0;
+let cues = [];
 let playing = false;
-let timer = null;
+let playbackToken = 0;
 let voice = localStorage.getItem("glamore.training.voice") !== "off";
 let currentPage = "index.html";
-let sourceIndexPromise = null;
-let lastTarget = null;
-let lastContextKey = "";
-let cueIndex = 0;
-let currentCues = [];
-let playbackToken = 0;
+let lastContext = "";
 let activeUtterance = null;
+let currentTarget = null;
+let currentScale = 1;
+let sourceIndexPromise = null;
 
-const normalize = (value = "") => String(value)
-  .normalize("NFD")
-  .replace(/[\u0300-\u036f]/g, "")
-  .toUpperCase()
-  .replace(/[^A-Z0-9]+/g, " ")
-  .replace(/\s+/g, " ")
-  .trim();
-
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const normalize = (value = "") => String(value).normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "").toUpperCase()
+  .replace(/[^A-Z0-9]+/g, " ").replace(/\s+/g, " ").trim();
 const escapeHtml = (value = "") => String(value)
-  .replace(/&/g, "&amp;")
-  .replace(/</g, "&lt;")
-  .replace(/>/g, "&gt;")
-  .replace(/"/g, "&quot;")
-  .replace(/'/g, "&#039;");
+  .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+function currentStep(){ return steps[stepIndex] || steps[0]; }
+function currentCue(){ return cues[cueIndex] || cues[0]; }
+function roleForStep(step){ return step?.id === "login" ? { loggedOut:true } : { loggedOut:false, role:activeTrack?.role || $("roleSelect").value || "dono" }; }
+function pageUrl(step){ return step.page ? `./sistema/${step.page}` : `./sistema/index.html#/${step.route || "dashboard"}`; }
 
-function visible(element) {
-  if (!element) return false;
-  const rect = element.getBoundingClientRect();
-  const style = element.ownerDocument.defaultView.getComputedStyle(element);
-  return rect.width > 0 && rect.height > 0 && style.display !== "none" && style.visibility !== "hidden";
-}
-
-function findByText(doc, text) {
-  const wanted = normalize(text);
-  const candidates = [...doc.querySelectorAll("h1,h2,h3,h4,summary,label,button,a,strong,span,p,small,legend,th,td")]
-    .filter(visible);
-
-  return candidates.find((element) => normalize(element.textContent) === wanted)
-    || candidates.find((element) => normalize(element.textContent).startsWith(wanted))
-    || candidates.find((element) => normalize(element.textContent).includes(wanted));
-}
-
-function frameDoc() {
-  try {
-    return frame.contentDocument;
-  } catch {
-    return null;
-  }
-}
-
-function clearTarget() {
-  const doc = frameDoc();
-  doc?.querySelectorAll(".training-highlight").forEach((element) => element.classList.remove("training-highlight"));
-  simCursor.classList.remove("active");
-  lastTarget = null;
-}
-
-function installGuard(doc) {
-  if (!doc || doc.__trainingGuard) return;
-  doc.__trainingGuard = true;
-
-  const guard = (event) => {
-    const target = event.target;
-    if (target?.closest?.("summary,[data-open-section]")) return;
-    if (target?.closest?.("a[href^='#/']")) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      frameStatus.textContent = "Use os botões Próximo e Voltar para seguir a aula.";
-      return;
-    }
-    if (target?.closest?.("button,input,select,textarea,form,label,a")) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      frameStatus.textContent = "Demonstração segura: a ação foi mostrada, mas não foi executada.";
-    }
+function detailFor(step){
+  return LESSON_DETAILS[step.id] || {
+    simple:step.body, user:"Observe a função indicada.",
+    system:step.body, result:"A função é demonstrada sem alterar dados reais.",
+    attention:"Execute no sistema oficial somente depois de compreender a etapa.",
+    audit:"O ambiente de treinamento não grava no Firebase oficial."
   };
-
-  doc.addEventListener("click", guard, true);
-  doc.addEventListener("submit", guard, true);
-  doc.addEventListener("keydown", (event) => {
-    if ((event.key === "Enter" || event.key === " ") && event.target?.closest?.("button,input,select,textarea,form,a")) {
-      guard(event);
-    }
-  }, true);
 }
 
-function roleForStep(step) {
-  if (step.id === "login") return { loggedOut: true };
-  return { loggedOut: false, role: activeTrack?.role || roleSelect.value || "dono" };
+function buildCues(step){
+  const detail = detailFor(step);
+  const targets = synchronizedTargetsFor(step);
+  const result = targets.map((target, i) => ({
+    target,
+    text:target.say || `Observe ${target.label || target.text || "o item destacado"}.`,
+    click:Boolean(target.click),
+    section:i === 0 ? "introdução" : "operação"
+  }));
+  result.push({ target:targets.at(-1) || step.target, text:`O que o sistema faz: ${detail.system}`, section:"lógica" });
+  result.push({ target:targets.at(-1) || step.target, text:`Resultado esperado: ${detail.result}`, section:"resultado" });
+  result.push({ target:targets[0] || step.target, text:`Atenção: ${detail.attention}`, section:"atenção" });
+  return result.filter(c => String(c.text || "").trim());
 }
 
-function applyContext(step) {
+function updateHeader(){
+  const step = currentStep();
+  $("chapterLabel").textContent = step?.chapter || "Começo";
+  $("stepTitle").textContent = step?.title || "Videoaula";
+  $("stepCount").textContent = `${steps.length ? stepIndex + 1 : 0} / ${steps.length}`;
+  $("cueCount").textContent = `cena ${cues.length ? cueIndex + 1 : 0} / ${cues.length}`;
+  const totalScenes = steps.reduce((sum, s) => sum + buildCues(s).length, 0) || 1;
+  const completed = steps.slice(0, stepIndex).reduce((sum, s) => sum + buildCues(s).length, 0) + cueIndex;
+  $("progressBar").style.width = `${Math.min(100, completed / totalScenes * 100)}%`;
+}
+
+function fillSummary(){
+  const step = currentStep(); if (!step) return;
+  const detail = detailFor(step);
+  $("summaryTitle").textContent = step.title;
+  $("lessonLead").textContent = detail.simple;
+  $("lessonUser").textContent = detail.user;
+  $("lessonSystem").textContent = detail.system;
+  $("lessonResult").textContent = detail.result;
+  $("lessonAttention").textContent = detail.attention;
+  $("lessonAudit").textContent = detail.audit;
+  $("stepBody").textContent = step.body || "";
+  const refs = MANUAL_KNOWLEDGE.filter(k => k.step === step.id).flatMap(k => k.sources || []).slice(0,5);
+  $("stepSource").innerHTML = refs.length ? `<strong>Fontes:</strong> ${refs.map(escapeHtml).join(" · ")}` : "A explicação é baseada na lógica e nos testes incluídos no pacote.";
+}
+
+function applyContext(step){
   const context = roleForStep(step);
   if (context.role) localStorage.setItem("glamore.training.role", context.role);
   localStorage.setItem("glamore.training.loggedOut", context.loggedOut ? "true" : "false");
-  roleSelect.value = context.role || roleSelect.value;
+  if (context.role) $("roleSelect").value = context.role;
 }
 
-function pageUrl(step) {
-  if (step.page) return `./sistema/${step.page}`;
-  return `./sistema/index.html#/${step.route || "dashboard"}`;
-}
-
-async function setFrame(step) {
+async function setFrame(step){
   applyContext(step);
-  const contextKey = `${localStorage.getItem("glamore.training.role") || "dono"}|${localStorage.getItem("glamore.training.loggedOut") || "false"}`;
+  const contextKey = `${localStorage.getItem("glamore.training.role")}|${localStorage.getItem("glamore.training.loggedOut")}`;
   const nextPage = step.page || "index.html";
   let changed = false;
-
-  if (contextKey !== lastContextKey) {
-    lastContextKey = contextKey;
-    currentPage = nextPage;
-    frame.src = pageUrl(step);
-    changed = true;
-  } else if (currentPage !== nextPage) {
-    currentPage = nextPage;
-    frame.src = pageUrl(step);
-    changed = true;
+  if (contextKey !== lastContext || currentPage !== nextPage){
+    lastContext = contextKey; currentPage = nextPage; frame.src = pageUrl(step); changed = true;
   } else if (step.page) {
-    frame.src = pageUrl(step);
-    changed = true;
+    frame.src = pageUrl(step); changed = true;
   } else {
-    try {
+    try{
       const wanted = `#/${step.route || "dashboard"}`;
-      if (frame.contentWindow.location.hash !== wanted) {
-        frame.contentWindow.location.hash = wanted;
-        changed = true;
-      }
-    } catch {
-      frame.src = pageUrl(step);
-      changed = true;
-    }
+      if (frame.contentWindow.location.hash !== wanted){ frame.contentWindow.location.hash = wanted; changed = true; }
+    }catch{ frame.src = pageUrl(step); changed = true; }
   }
-
-  if (changed) {
-    frameStatus.textContent = "Abrindo a tela da aula...";
-    await sleep(700);
+  if (changed){
+    frameStatus.textContent = "Abrindo a tela correta...";
+    await waitBridge(9000);
+    await sleep(350);
   }
-
-  return changed;
 }
 
-async function waitDoc() {
-  for (let attempt = 0; attempt < 40; attempt += 1) {
-    const doc = frameDoc();
-    if (doc?.body && doc.readyState !== "loading") {
-      installGuard(doc);
-      return doc;
-    }
-    await sleep(120);
+async function waitBridge(timeout=6500){
+  const until = Date.now() + timeout;
+  while (Date.now() < until){
+    try{
+      const bridge = frame.contentWindow?.GlamoreTrainingBridge;
+      if (bridge?.find){ bridge.lockUserNavigation(); return bridge; }
+    }catch{}
+    await sleep(100);
   }
   return null;
 }
 
-async function moveCursor(target) {
-  if (!target) return;
+function cueLabel(cue){
+  return cue?.target?.label || cue?.target?.text || currentStep()?.title || "Item da aula";
+}
+
+async function locateTarget(step, cue){
+  const bridge = await waitBridge();
+  if (!bridge) return null;
+  const deadline = Date.now() + 7000;
+  while (Date.now() < deadline){
+    let el = null;
+    try{ el = bridge.find(cue.target || step.target || {}); }catch{}
+    if (el) return { bridge, el };
+    await sleep(180);
+  }
+  return null;
+}
+
+function resetCamera(){
+  currentScale = 1;
+  cameraFrame.style.transform = "scale(1)";
+  ring.classList.remove("active");
+  targetLabelEl.classList.remove("active");
+  cursor.classList.remove("active");
+  Object.values(shades).forEach(s => s.classList.remove("active"));
+  currentTarget = null;
+}
+
+function chooseScale(rect){
+  const area = rect.width * rect.height;
+  if (rect.width < 90 || rect.height < 34) return 1.22;
+  if (area < 26000) return 1.15;
+  if (area < 70000) return 1.08;
+  return 1.02;
+}
+
+function scaledRect(innerRect, scale){
+  const stageRect = videoStage.getBoundingClientRect();
   const frameRect = frame.getBoundingClientRect();
-  const targetRect = target.getBoundingClientRect();
-  const stageRect = $("stageViewport").getBoundingClientRect();
-
-  const x = frameRect.left - stageRect.left + targetRect.left
-    + Math.min(targetRect.width * 0.55, Math.max(18, targetRect.width - 18));
-  const y = frameRect.top - stageRect.top + targetRect.top
-    + Math.min(targetRect.height * 0.55, Math.max(18, targetRect.height - 18));
-
-  simCursor.style.left = `${x}px`;
-  simCursor.style.top = `${y}px`;
-  simCursor.classList.add("active");
-  await sleep(720);
+  const fw = frameRect.width, fh = frameRect.height;
+  const x = (innerRect.left - fw/2) * scale + fw/2 + (frameRect.left - stageRect.left);
+  const y = (innerRect.top - fh/2) * scale + fh/2 + (frameRect.top - stageRect.top);
+  return { left:x, top:y, width:innerRect.width*scale, height:innerRect.height*scale,
+    right:x+innerRect.width*scale, bottom:y+innerRect.height*scale };
 }
 
-async function cursorClick() {
-  simCursor.classList.add("clicking");
-  await sleep(140);
-  simCursor.classList.remove("clicking");
-}
-
-function targetLabel(target = {}) {
-  return target.label || target.text || (target.selector ? "área indicada" : "item da aula");
-}
-
-function resolveCueTarget(doc, step, cue) {
-  const candidates = [cue?.target, step?.target].filter(Boolean);
-  for (const spec of candidates) {
-    let target = null;
-    if (spec.selector) target = [...doc.querySelectorAll(spec.selector)].find(visible) || null;
-    if (!target && spec.text) target = findByText(doc, spec.text);
-    if (target) return target;
-  }
-  return doc.querySelector("main.main,#app,body");
-}
-
-async function focusCue(step, cue, { animateClick = false } = {}) {
-  const doc = await waitDoc();
-  if (!doc) {
-    frameStatus.textContent = "Não foi possível carregar a tela demonstrativa.";
-    return false;
-  }
-
-  clearTarget();
-  const target = resolveCueTarget(doc, step, cue);
-  if (!target) {
-    frameStatus.textContent = "O item desta frase não foi localizado. A aula foi pausada para não mostrar algo errado.";
-    return false;
-  }
-
-  target.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
-  await sleep(520);
-  target.classList.add("training-highlight");
-  lastTarget = target;
-  await moveCursor(target);
-  if (animateClick) await cursorClick();
-
-  frameStatus.textContent = `Agora observe: ${targetLabel(cue?.target || step.target)}.`;
-  stageCaptionTitle.textContent = step.title;
-  stageCaptionText.textContent = cue?.text || "O item citado está destacado exatamente durante esta frase.";
-  return true;
-}
-
-function current() {
-  return steps[index] || steps[0];
-}
-
-function detailFor(step) {
-  return LESSON_DETAILS[step.id] || {
-    simple: step.body,
-    user: "Observe o item destacado e siga a orientação da aula.",
-    system: step.body,
-    result: "A função é apresentada sem alterar dados reais.",
-    attention: "Use o sistema oficial somente depois de compreender a etapa.",
-    audit: "A demonstração não grava no Firebase oficial."
+function paintSpotlight(rect, label){
+  const stage = videoStage.getBoundingClientRect();
+  const pad = 9;
+  const r = {
+    left:Math.max(5, rect.left-pad), top:Math.max(5, rect.top-pad),
+    right:Math.min(stage.width-5, rect.right+pad), bottom:Math.min(stage.height-5, rect.bottom+pad)
   };
-}
+  r.width = Math.max(10, r.right-r.left); r.height = Math.max(10, r.bottom-r.top);
 
-function cueSectionElement(section) {
-  if (section === "lead") return lessonLead;
-  if (section === "user") return document.querySelector(".action-card");
-  if (section === "system") return document.querySelector(".system-card");
-  if (section === "result") return document.querySelector(".result-card");
-  if (section === "attention") return document.querySelector(".attention-card");
-  if (section === "audit") return document.querySelector(".technical-details");
-  return null;
-}
+  ring.style.cssText += `;left:${r.left}px;top:${r.top}px;width:${r.width}px;height:${r.height}px`;
+  ring.classList.add("active");
 
-function clearActiveLessonSection() {
-  document.querySelectorAll(".cue-active").forEach((element) => element.classList.remove("cue-active"));
-  lessonCards?.classList.remove("has-active");
-}
+  shades.top.style.cssText += `;left:0;top:0;width:100%;height:${r.top}px`;
+  shades.bottom.style.cssText += `;left:0;top:${r.bottom}px;width:100%;height:${Math.max(0,stage.height-r.bottom)}px`;
+  shades.left.style.cssText += `;left:0;top:${r.top}px;width:${r.left}px;height:${r.height}px`;
+  shades.right.style.cssText += `;left:${r.right}px;top:${r.top}px;width:${Math.max(0,stage.width-r.right)}px;height:${r.height}px`;
+  Object.values(shades).forEach(s => s.classList.add("active"));
 
-function activateLessonSection(section) {
-  clearActiveLessonSection();
-  const element = cueSectionElement(section);
-  if (element) {
-    element.classList.add("cue-active");
-    if (element.classList.contains("lesson-card")) lessonCards?.classList.add("has-active");
+  targetLabelEl.textContent = label;
+  const labelTop = r.top > 48 ? r.top - 38 : r.bottom + 10;
+  targetLabelEl.style.left = `${Math.max(8,Math.min(r.left,stage.width-350))}px`;
+  targetLabelEl.style.top = `${Math.max(8,Math.min(labelTop,stage.height-38))}px`;
+  targetLabelEl.classList.add("active");
+
+  const cursorX = Math.min(stage.width-30, r.left + Math.max(20, Math.min(r.width*.62,r.width-14)));
+  const cursorY = Math.min(stage.height-30, r.top + Math.max(20, Math.min(r.height*.58,r.height-14)));
+  cursor.style.left = `${cursorX}px`; cursor.style.top = `${cursorY}px`; cursor.classList.add("active");
+
+  const captionHeight = narration.getBoundingClientRect().height || 120;
+  if (r.bottom > stage.height * .58 && r.top > captionHeight + 36){
+    narration.classList.remove("bottom"); narration.classList.add("top");
+  }else{
+    narration.classList.remove("top"); narration.classList.add("bottom");
   }
 }
 
-function buildCues(step) {
-  const detail = detailFor(step);
-  const targets = synchronizedTargetsFor(step);
-  const cues = [];
-
-  targets.forEach((target, position) => {
-    cues.push({
-      target,
-      text: target.say || `Observe ${targetLabel(target)}.`,
-      section: position === 0 ? "lead" : "user",
-      click: Boolean(target.click)
-    });
-  });
-
-  cues.push({
-    target: targets[targets.length - 1] || step.target,
-    text: `O que o sistema faz: ${detail.system}`,
-    section: "system"
-  });
-  cues.push({
-    target: targets[targets.length - 1] || step.target,
-    text: `Resultado esperado: ${detail.result}`,
-    section: "result"
-  });
-  cues.push({
-    target: targets[0] || step.target,
-    text: `Atenção: ${detail.attention}`,
-    section: "attention"
-  });
-
-  return cues.filter((cue) => String(cue.text || "").trim());
+async function animateClick(){
+  cursor.classList.add("clicking");
+  const c = cursor.getBoundingClientRect(), s = videoStage.getBoundingClientRect();
+  ripple.style.left = `${c.left-s.left+5}px`; ripple.style.top = `${c.top-s.top+5}px`;
+  ripple.classList.remove("active"); void ripple.offsetWidth; ripple.classList.add("active");
+  await sleep(150); cursor.classList.remove("clicking");
 }
 
-function updateCueUi(step, cue, position) {
-  cueIndex = position;
-  cueCount.textContent = `cena ${position + 1} / ${currentCues.length}`;
-  spokenNow.textContent = cue.text;
-  syncNow.classList.remove("waiting", "paused");
-  activateLessonSection(cue.section);
-  stageCaptionTitle.textContent = targetLabel(cue.target || step.target);
-  stageCaptionText.textContent = cue.text;
+async function focusCue(step, cue){
+  resetCamera();
+  frameStatus.textContent = `Localizando exatamente: ${cueLabel(cue)}...`;
+  const located = await locateTarget(step,cue);
+  if (!located){
+    showFatal(`O elemento “${cueLabel(cue)}” não foi encontrado na tela ${step.title}. A aula foi pausada para não destacar uma área genérica ou ensinar uma posição errada.`);
+    return false;
+  }
+  const {bridge,el} = located;
+  try{
+    await bridge.scrollTo(el);
+    await sleep(180);
+    const before = bridge.rect(el);
+    currentScale = chooseScale(before);
+    cameraFrame.style.transform = `scale(${currentScale})`;
+    await sleep(560);
+    const after = bridge.rect(el);
+    const rect = scaledRect(after,currentScale);
+    currentTarget = {bridge,el,cue,rect};
+    paintSpotlight(rect,cueLabel(cue));
+    if (cue.click){
+      await sleep(250); await animateClick();
+      try{ bridge.safeActivate(el,cueLabel(cue)); }catch{}
+    }
+    frameStatus.textContent = `Na tela: ${cueLabel(cue)}.`;
+    return true;
+  }catch(err){
+    showFatal(`A câmera não conseguiu enquadrar “${cueLabel(cue)}”: ${err?.message || err}`);
+    return false;
+  }
 }
 
-function speechRate() {
-  return Number(speedSelect.value || 1);
+function showFatal(message){
+  stopPlayback(false);
+  $("fatalSceneText").textContent = message;
+  fatalScene.hidden = false;
+}
+function hideFatal(){ fatalScene.hidden = true; }
+
+function visualDuration(text){
+  const words = String(text).trim().split(/\s+/).filter(Boolean).length;
+  return Math.max(2500, words / (2.55 * Number($("speedSelect").value || 1)) * 1000);
 }
 
-function visualWaitMs(text) {
-  const words = String(text || "").trim().split(/\s+/).filter(Boolean).length;
-  return Math.max(2400, Math.ceil(words / 2.8) * 1000 / speechRate());
-}
-
-function speakAndWait(text, token) {
-  if (!voice || !("speechSynthesis" in window)) {
-    return new Promise((resolve) => {
-      const started = Date.now();
-      const tick = () => {
-        if (token !== playbackToken || !playing) return resolve(false);
-        if (Date.now() - started >= visualWaitMs(text)) return resolve(true);
-        setTimeout(tick, 100);
-      };
-      tick();
+function speak(text, token){
+  wordProgress.style.width = "0%";
+  if (!voice || !("speechSynthesis" in window)){
+    return new Promise(resolve=>{
+      const duration = visualDuration(text), started=performance.now();
+      const tick=()=>{
+        if(token!==playbackToken||!playing)return resolve(false);
+        const pct=Math.min(100,(performance.now()-started)/duration*100);
+        wordProgress.style.width=`${pct}%`;
+        if(pct>=100)return resolve(true);
+        requestAnimationFrame(tick);
+      }; tick();
     });
   }
-
-  return new Promise((resolve) => {
+  return new Promise(resolve=>{
     speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    activeUtterance = utterance;
-    let finished = false;
-    const finish = () => {
-      if (finished) return;
-      finished = true;
-      clearTimeout(safetyTimer);
-      resolve(token === playbackToken && playing);
+    const u = new SpeechSynthesisUtterance(text);
+    activeUtterance = u;
+    u.lang="pt-BR"; u.rate=Number($("speedSelect").value||1); u.pitch=1; u.volume=1;
+    const duration = visualDuration(text);
+    const started=performance.now();
+    let done=false;
+    const finish=()=>{if(done)return;done=true;clearTimeout(safety);wordProgress.style.width="100%";resolve(token===playbackToken&&playing)};
+    const safety=setTimeout(finish,Math.max(14000,duration*2.4));
+    u.onboundary=(event)=>{
+      if(event.name==="word"||Number.isFinite(event.charIndex)){
+        wordProgress.style.width=`${Math.min(98,event.charIndex/Math.max(1,text.length)*100)}%`;
+      }
     };
-    const safetyTimer = setTimeout(finish, Math.max(12000, visualWaitMs(text) * 2.2));
-    utterance.lang = "pt-BR";
-    utterance.rate = speechRate();
-    utterance.pitch = 1;
-    utterance.volume = 1;
-    utterance.onend = finish;
-    utterance.onerror = finish;
-    speechSynthesis.speak(utterance);
+    u.onend=finish;u.onerror=finish;
+    speechSynthesis.speak(u);
   });
 }
 
-async function presentCue(step, position, token, { narrate = true } = {}) {
-  if (token !== playbackToken) return false;
-  const cue = currentCues[position];
-  if (!cue) return false;
-
-  updateCueUi(step, cue, position);
-  syncNow.classList.add("waiting");
-  spokenNow.textContent = "Localizando o item correto na tela...";
-
-  const focused = await focusCue(step, cue);
-  if (!focused || token !== playbackToken) return false;
-
-  syncNow.classList.remove("waiting");
-  spokenNow.textContent = cue.text;
-  stageCard?.classList.add("sync-speaking");
-
-  let clickTimer = null;
-  if (cue.click && narrate) clickTimer = setTimeout(() => cursorClick(), 420);
-  const completed = narrate ? await speakAndWait(cue.text, token) : true;
-  if (clickTimer) clearTimeout(clickTimer);
-  stageCard?.classList.remove("sync-speaking");
-  return completed;
+async function presentCue(position,token,{narrate=true}={}){
+  cueIndex=position; updateHeader();
+  const step=currentStep(),cue=currentCue();
+  narrationTarget.textContent=`AGORA NA TELA · ${cueLabel(cue)}`;
+  narrationProgress.textContent=`Cena ${cueIndex+1} de ${cues.length}`;
+  spokenNow.textContent="A câmera está abrindo o item correto...";
+  const ok=await focusCue(step,cue);
+  if(!ok||token!==playbackToken)return false;
+  spokenNow.textContent=cue.text;
+  await sleep(180);
+  return narrate ? await speak(cue.text,token) : true;
 }
 
-function cancelPlayback({ paused = false } = {}) {
-  playbackToken += 1;
-  clearTimeout(timer);
-  if ("speechSynthesis" in window) speechSynthesis.cancel();
-  activeUtterance = null;
-  stageCard?.classList.remove("sync-speaking");
-  stageCard?.classList.toggle("sync-paused", paused);
-  if (paused) {
-    syncNow.classList.add("paused");
-    spokenNow.textContent = `Pausado nesta frase: ${currentCues[cueIndex]?.text || ""}`;
+async function run(start=cueIndex){
+  if(!steps.length)return $("trackDialog").showModal();
+  playing=true;const token=++playbackToken;
+  $("playBtn").textContent="Ⅱ Pausar";
+  stageWaiting.classList.add("hidden");
+  hideFatal();
+  await setFrame(currentStep());
+  for(let i=start;i<cues.length;i++){
+    if(!playing||token!==playbackToken)return;
+    const complete=await presentCue(i,token,{narrate:true});
+    if(!complete||!playing||token!==playbackToken)return;
+    await sleep(420);
   }
-}
-
-function saveProgress() {
-  if (!activeTrack) return;
-  localStorage.setItem(`glamore.training.progress.${activeTrack.id}`, String(index));
-}
-
-function activateTab(name) {
-  const lessonActive = name === "lesson";
-  lessonTabBtn.classList.toggle("active", lessonActive);
-  qaTabBtn.classList.toggle("active", !lessonActive);
-  lessonTabBtn.setAttribute("aria-selected", String(lessonActive));
-  qaTabBtn.setAttribute("aria-selected", String(!lessonActive));
-  lessonPanel.hidden = !lessonActive;
-  qaPanel.hidden = lessonActive;
-}
-
-function renderLesson(step) {
-  const detail = detailFor(step);
-  chapterLabel.textContent = step.chapter;
-  stepCount.textContent = `${index + 1} / ${steps.length}`;
-  stepTitle.textContent = step.title;
-  lessonLead.textContent = detail.simple;
-  lessonUser.textContent = detail.user;
-  lessonSystem.textContent = detail.system;
-  lessonResult.textContent = detail.result;
-  lessonAttention.textContent = detail.attention;
-  lessonAudit.textContent = detail.audit;
-  stepBody.textContent = step.body;
-  stepSource.textContent = step.page
-    ? `Tela demonstrada: ${step.page}`
-    : `Tela demonstrada: ${step.route || "dashboard"}`;
-  progressBar.style.width = `${((index + 1) / steps.length) * 100}%`;
-  prevBtn.disabled = index === 0;
-  nextBtn.disabled = index === steps.length - 1;
-  stageLessonTitle.textContent = step.title;
-  stageCaptionTitle.textContent = step.title;
-  stageCaptionText.textContent = "A narração só começa depois que o item correto estiver destacado.";
-  currentCues = buildCues(step);
-  cueIndex = 0;
-  cueCount.textContent = `cena 1 / ${currentCues.length}`;
-  spokenNow.textContent = "Pressione Iniciar aula. O sistema avançará frase por frase, sem correr na frente do áudio.";
-  clearActiveLessonSection();
-}
-
-async function showStep(next, { keepTab = false, previewCue = false } = {}) {
-  if (!steps.length) return;
-  cancelPlayback();
-  playing = false;
-  playBtn.textContent = "▶ Iniciar aula";
-  playBtn.setAttribute("aria-pressed", "false");
-
-  index = Math.max(0, Math.min(steps.length - 1, Number(next) || 0));
-  const step = current();
-  if (!keepTab) activateTab("lesson");
-  renderLesson(step);
-  renderMap();
-  saveProgress();
-  lessonPanel.scrollTop = 0;
-  clearTarget();
-  frameStatus.textContent = "Aguardando Play. Nenhum item será destacado antes da frase correspondente.";
-
-  await setFrame(step);
-  if (previewCue && currentCues[0]) {
-    const token = playbackToken;
-    await presentCue(step, 0, token, { narrate: false });
-    spokenNow.textContent = "Item inicial preparado. Pressione Iniciar aula para acompanhar a explicação sincronizada.";
+  if(!playing||token!==playbackToken)return;
+  if(stepIndex>=steps.length-1){
+    stopPlayback(false);spokenNow.textContent="Trilha concluída. Use Aulas para rever uma função ou Perguntar para tirar uma dúvida.";return;
   }
+  stepIndex++;cueIndex=0;cues=buildCues(currentStep());fillSummary();updateHeader();
+  saveProgress();resetCamera();await setFrame(currentStep());await run(0);
 }
 
-async function runSynchronizedLesson(startCue = cueIndex) {
-  if (!steps.length) return;
-  const token = ++playbackToken;
-  const step = current();
-  playing = true;
-  stageCard?.classList.remove("sync-paused");
-  activateTab("lesson");
-  playBtn.textContent = "Ⅱ Pausar";
-  playBtn.setAttribute("aria-pressed", "true");
-
-  await setFrame(step);
-  for (let position = startCue; position < currentCues.length; position += 1) {
-    if (!playing || token !== playbackToken) return;
-    const completed = await presentCue(step, position, token, { narrate: true });
-    if (!completed || !playing || token !== playbackToken) return;
-    await sleep(320);
-  }
-
-  if (!playing || token !== playbackToken) return;
-  if (index >= steps.length - 1) {
-    stop();
-    spokenNow.textContent = "Trilha concluída. Use o mapa para rever uma função ou faça uma pergunta.";
-    return;
-  }
-
-  index += 1;
-  const nextStep = current();
-  renderLesson(nextStep);
-  renderMap();
-  saveProgress();
-  lessonPanel.scrollTop = 0;
-  clearTarget();
-  frameStatus.textContent = "Preparando a próxima aula. O áudio ainda não começou.";
-  await setFrame(nextStep);
-  cueIndex = 0;
-  await runSynchronizedLesson(0);
+function stopPlayback(showPaused=true){
+  playing=false;playbackToken++;
+  if("speechSynthesis" in window)speechSynthesis.cancel();
+  activeUtterance=null;
+  $("playBtn").textContent="▶ Continuar";
+  if(showPaused)frameStatus.textContent="Videoaula pausada no item atual.";
 }
 
-function play() {
-  if (playing) return;
-  runSynchronizedLesson(cueIndex);
+async function goStep(next){
+  stopPlayback(false);hideFatal();stepIndex=Math.max(0,Math.min(steps.length-1,next));
+  cueIndex=0;cues=buildCues(currentStep());fillSummary();updateHeader();saveProgress();
+  resetCamera();stageWaiting.classList.add("hidden");await setFrame(currentStep());
+  await presentCue(0,++playbackToken,{narrate:false});
 }
 
-function stop() {
-  const wasPlaying = playing;
-  playing = false;
-  cancelPlayback({ paused: wasPlaying });
-  playBtn.textContent = "▶ Continuar";
-  playBtn.setAttribute("aria-pressed", "false");
+async function goCue(next){
+  if(!steps.length)return;
+  stopPlayback(false);hideFatal();cueIndex=Math.max(0,Math.min(cues.length-1,next));updateHeader();
+  await presentCue(cueIndex,++playbackToken,{narrate:false});
 }
 
-function resolveTrack(track) {
-  if (track.steps === "ALL") return [...MANUAL_TOUR];
-  if (Array.isArray(track.steps)) {
-    return track.steps.map((id) => MANUAL_TOUR.find((step) => step.id === id)).filter(Boolean);
-  }
-  if (track.chapters) return MANUAL_TOUR.filter((step) => track.chapters.includes(step.chapter));
+function resolveTrack(track){
+  if(track.steps==="ALL")return [...MANUAL_TOUR];
+  if(Array.isArray(track.steps))return track.steps.map(id=>MANUAL_TOUR.find(s=>s.id===id)).filter(Boolean);
+  if(track.chapters)return MANUAL_TOUR.filter(s=>track.chapters.includes(s.chapter));
   return [...MANUAL_TOUR];
 }
-
-function selectTrack(trackId) {
-  activeTrack = TRAINING_TRACKS.find((track) => track.id === trackId) || TRAINING_TRACKS[0];
-  steps = resolveTrack(activeTrack);
-  localStorage.setItem("glamore.training.track", activeTrack.id);
-  roleSelect.value = activeTrack.role || "dono";
-  localStorage.setItem("glamore.training.role", roleSelect.value);
-  localStorage.removeItem("glamore.training.loggedOut");
-
-  index = Math.min(
-    Number(localStorage.getItem(`glamore.training.progress.${activeTrack.id}`) || 0),
-    steps.length - 1
-  );
-
-  if (trackDialog.open) trackDialog.close();
-  stop();
-  showStep(index);
+function selectTrack(id){
+  activeTrack=TRAINING_TRACKS.find(t=>t.id===id)||TRAINING_TRACKS[0];
+  steps=resolveTrack(activeTrack);
+  $("roleSelect").value=activeTrack.role||"dono";
+  localStorage.setItem("glamore.training.track",activeTrack.id);
+  localStorage.setItem("glamore.training.role",$("roleSelect").value);
+  stepIndex=Math.min(Number(localStorage.getItem(`glamore.training.progress.${activeTrack.id}`)||0),steps.length-1);
+  cueIndex=0;cues=buildCues(currentStep());fillSummary();updateHeader();
+  $("trackDialog").close();stageWaiting.classList.add("hidden");goStep(stepIndex);
 }
+function saveProgress(){if(activeTrack)localStorage.setItem(`glamore.training.progress.${activeTrack.id}`,String(stepIndex));}
 
-function renderTracks() {
-  trackGrid.innerHTML = TRAINING_TRACKS.map((track) => {
-    const count = resolveTrack(track).length;
-    const minutes = Math.max(3, Math.ceil(count * 1.15));
-    return `<button class="track-card" data-track="${escapeHtml(track.id)}">
-      <span class="icon">${escapeHtml(track.icon)}</span>
-      <strong>${escapeHtml(track.title)}</strong>
-      <span>${escapeHtml(track.subtitle)}</span>
-      <em>${count} aulas · aproximadamente ${minutes} min</em>
-    </button>`;
+function renderTracks(){
+  $("trackGrid").innerHTML=TRAINING_TRACKS.map(track=>{
+    const count=resolveTrack(track).length;
+    return `<button class="track-card" data-track="${escapeHtml(track.id)}"><span class="icon">${escapeHtml(track.icon)}</span><strong>${escapeHtml(track.title)}</strong><span>${escapeHtml(track.subtitle)}</span><em>${count} videoaulas</em></button>`;
   }).join("");
-
-  trackGrid.querySelectorAll("[data-track]").forEach((button) => {
-    button.addEventListener("click", () => selectTrack(button.dataset.track));
-  });
+  document.querySelectorAll("[data-track]").forEach(b=>b.onclick=()=>selectTrack(b.dataset.track));
+}
+function renderMap(){
+  $("mapContent").innerHTML=steps.map((s,i)=>`<button class="map-step ${i===stepIndex?"active":""}" data-step="${i}"><small>${escapeHtml(s.chapter)} · aula ${i+1}</small><strong>${escapeHtml(s.title)}</strong></button>`).join("");
+  document.querySelectorAll("[data-step]").forEach(b=>b.onclick=()=>{$("mapDialog").close();goStep(Number(b.dataset.step));});
 }
 
-function renderMap() {
-  if (!steps.length) return;
-  mapContent.innerHTML = steps.map((step, position) => `
-    <button class="map-step ${position === index ? "active" : ""}" data-step="${position}">
-      <small>${escapeHtml(step.chapter)} · aula ${position + 1}</small>
-      <strong>${escapeHtml(step.title)}</strong>
-    </button>
-  `).join("");
-
-  mapContent.querySelectorAll("[data-step]").forEach((button) => {
-    button.addEventListener("click", () => {
-      mapDialog.close();
-      stop();
-      showStep(Number(button.dataset.step));
-    });
-  });
+function tokens(text){return new Set(normalize(text).split(" ").filter(w=>w.length>2));}
+function scoreKnowledge(question,item){
+  const q=tokens(question),title=normalize(item.title),keywords=(item.keywords||[]).map(normalize),answer=normalize(item.answer);let score=0;
+  for(const word of q){if(title.includes(word))score+=5;if(keywords.some(k=>k.includes(word)))score+=4;if(answer.includes(word))score+=1}
+  const nq=normalize(question);if(keywords.some(k=>nq.includes(k)||k.includes(nq)))score+=10;return score;
 }
-
-function tokens(text) {
-  return new Set(normalize(text).split(" ").filter((word) => word.length > 2));
-}
-
-function scoreKnowledge(question, item) {
-  const questionTokens = tokens(question);
-  const title = normalize(item.title);
-  const keywords = (item.keywords || []).map(normalize);
-  const answer = normalize(item.answer);
-  let score = 0;
-
-  for (const word of questionTokens) {
-    if (title.includes(word)) score += 5;
-    if (keywords.some((keyword) => keyword.includes(word))) score += 4;
-    if (answer.includes(word)) score += 1;
-  }
-
-  const normalizedQuestion = normalize(question);
-  if (keywords.some((keyword) => normalizedQuestion.includes(keyword) || keyword.includes(normalizedQuestion))) {
-    score += 10;
-  }
-
-  return score;
-}
-
-async function sourceIndex() {
-  if (sourceIndexPromise) return sourceIndexPromise;
-
-  sourceIndexPromise = (async () => {
-    const rows = [];
-
-    for (const file of MANUAL_SOURCE_FILES) {
-      try {
-        const response = await fetch(`./fontes/${file}`);
-        if (!response.ok) continue;
-        const text = await response.text();
-        const clean = text.replace(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]+/g, "[imagem omitida]");
-        const lines = clean.split(/\r?\n/);
-
-        for (let line = 0; line < lines.length; line += 18) {
-          const chunk = lines.slice(line, line + 24).join("\n").trim();
-          if (chunk.length > 80) {
-            rows.push({ file, line: line + 1, text: chunk, norm: normalize(chunk) });
-          }
-        }
-      } catch {
-        // Fonte indisponível: as demais continuam sendo pesquisadas.
-      }
-    }
-
-    return rows;
-  })();
-
+async function sourceIndex(){
+  if(sourceIndexPromise)return sourceIndexPromise;
+  sourceIndexPromise=(async()=>{const rows=[];for(const file of MANUAL_SOURCE_FILES){try{const r=await fetch(`./fontes/${file}`);if(!r.ok)continue;const clean=(await r.text()).replace(/data:image\/[a-z]+;base64,[A-Za-z0-9+/=]+/g,"[imagem omitida]");const lines=clean.split(/\r?\n/);for(let i=0;i<lines.length;i+=18){const chunk=lines.slice(i,i+24).join("\n").trim();if(chunk.length>80)rows.push({file,line:i+1,text:chunk,norm:normalize(chunk)})}}catch{}}return rows})();
   return sourceIndexPromise;
 }
-
-function addMessage(className, html) {
-  const div = document.createElement("div");
-  div.className = className;
-  div.innerHTML = html;
-  qaMessages.appendChild(div);
-  qaMessages.scrollTop = qaMessages.scrollHeight;
-}
-
-async function answerQuestion(question) {
-  activateTab("qa");
-  addMessage("qa-user", escapeHtml(question));
-
-  const ranked = MANUAL_KNOWLEDGE
-    .map((item) => ({ item, score: scoreKnowledge(question, item) }))
-    .sort((a, b) => b.score - a.score);
-
-  const best = ranked[0];
-
-  if (best && best.score >= 5) {
-    const item = best.item;
-    addMessage("qa-answer", `
-      <h3>${escapeHtml(item.title)}</h3>
-      <div>${escapeHtml(item.answer)}</div>
-      <div class="answer-sources"><strong>Fontes:</strong> ${(item.sources || []).map(escapeHtml).join(" · ")}</div>
-      <button data-answer-step="${escapeHtml(item.step || "")}">Mostrar esta função na tela</button>
-    `);
-
-    qaMessages.querySelectorAll("[data-answer-step]").forEach((button) => {
-      button.onclick = () => {
-        const id = button.dataset.answerStep;
-        let position = steps.findIndex((step) => step.id === id);
-
-        if (position < 0) {
-          const source = MANUAL_TOUR.find((step) => step.id === id);
-          if (source) {
-            steps = [source];
-            position = 0;
-          }
-        }
-
-        if (position >= 0) {
-          activateTab("lesson");
-          showStep(position);
-        }
-      };
-    });
+function addMessage(cls,html){const d=document.createElement("div");d.className=cls;d.innerHTML=html;$("qaMessages").appendChild(d);$("qaMessages").scrollTop=$("qaMessages").scrollHeight}
+async function answerQuestion(question){
+  addMessage("qa-user",escapeHtml(question));
+  const ranked=MANUAL_KNOWLEDGE.map(item=>({item,score:scoreKnowledge(question,item)})).sort((a,b)=>b.score-a.score);
+  const best=ranked[0];
+  if(best&&best.score>=5){
+    const item=best.item;
+    addMessage("qa-answer",`<h3>${escapeHtml(item.title)}</h3><div>${escapeHtml(item.answer)}</div><div class="answer-sources"><strong>Fontes:</strong> ${(item.sources||[]).map(escapeHtml).join(" · ")}</div><button data-answer-step="${escapeHtml(item.step||"")}">Mostrar esta função na videoaula</button>`);
+    document.querySelectorAll("[data-answer-step]").forEach(b=>b.onclick=()=>{const pos=steps.findIndex(s=>s.id===b.dataset.answerStep);if(pos>=0){$("qaDialog").close();goStep(pos)}});
     return;
   }
-
-  const indexRows = await sourceIndex();
-  const questionTokens = [...tokens(question)];
-  const matches = indexRows
-    .map((row) => ({
-      row,
-      score: questionTokens.reduce((total, word) => total + (row.norm.includes(word) ? 1 : 0), 0)
-    }))
-    .filter((match) => match.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 3);
-
-  if (matches.length) {
-    addMessage("qa-answer", `
-      <h3>Evidências próximas encontradas</h3>
-      <div>Não existe uma resposta preparada suficiente para afirmar isso com segurança. Encontrei estes trechos relacionados:</div>
-      <div class="answer-sources">${matches.map((match) =>
-        `${escapeHtml(match.row.file)}:${match.row.line} — ${escapeHtml(match.row.text.slice(0, 260))}`
-      ).join("<br><br>")}</div>
-    `);
-  } else {
-    addMessage("qa-answer", `
-      <h3>Não há evidência segura</h3>
-      <div>Não encontrei no código, documentos e testes uma base suficiente para responder sem suposição. Reformule usando o nome da tela, botão, pedido ou operação.</div>
-    `);
-  }
+  const rows=await sourceIndex(),words=[...tokens(question)];
+  const matches=rows.map(row=>({row,score:words.reduce((n,w)=>n+(row.norm.includes(w)?1:0),0)})).filter(x=>x.score>0).sort((a,b)=>b.score-a.score).slice(0,3);
+  if(matches.length)addMessage("qa-answer",`<h3>Evidências próximas encontradas</h3><div>Não existe uma resposta preparada suficiente para afirmar isso com segurança.</div><div class="answer-sources">${matches.map(m=>`${escapeHtml(m.row.file)}:${m.row.line} — ${escapeHtml(m.row.text.slice(0,260))}`).join("<br><br>")}</div>`);
+  else addMessage("qa-answer","<h3>Não há evidência segura</h3><div>Não encontrei base suficiente no código, nos documentos e nos testes para responder sem suposição.</div>");
+}
+function renderQuickQuestions(){
+  const questions=["O que acontece quando falta peça em uma venda?","Quantidade e peso são independentes?","Por que produção aprovada não cria ordem?","Como funciona o estorno de inventário?","Quem pode ver a Auditoria?","Como a produção pronta atende uma venda?"];
+  $("quickQuestions").innerHTML=questions.map(q=>`<button>${escapeHtml(q)}</button>`).join("");
+  document.querySelectorAll("#quickQuestions button").forEach(b=>b.onclick=()=>answerQuestion(b.textContent));
 }
 
-function renderQuickQuestions() {
-  const questions = [
-    "O que acontece quando falta peça em uma venda?",
-    "Quantidade e peso são independentes?",
-    "Por que produção aprovada não cria ordem?",
-    "Como funciona o estorno de inventário?",
-    "Quem pode ver a Auditoria?",
-    "Como a produção pronta atende uma venda?"
-  ];
-
-  quickQuestions.innerHTML = questions
-    .map((question) => `<button>${escapeHtml(question)}</button>`)
-    .join("");
-
-  quickQuestions.querySelectorAll("button").forEach((button) => {
-    button.onclick = () => {
-      qaInput.value = button.textContent;
-      answerQuestion(button.textContent);
-    };
-  });
-}
-
-lessonTabBtn.onclick = () => activateTab("lesson");
-qaTabBtn.onclick = () => activateTab("qa");
-
-prevBtn.onclick = () => {
-  stop();
-  showStep(index - 1);
+$("chooseTrackBtn").onclick=()=>{$("trackDialog").showModal()};
+$("mapBtn").onclick=()=>{renderMap();$("mapDialog").showModal()};
+$("summaryBtn").onclick=()=>{fillSummary();$("summaryDialog").showModal()};
+$("qaBtn").onclick=()=>{$("qaDialog").showModal()};
+$("playBtn").onclick=()=>playing?stopPlayback():run(cueIndex);
+$("prevStepBtn").onclick=()=>goStep(stepIndex-1);
+$("nextStepBtn").onclick=()=>goStep(stepIndex+1);
+$("prevCueBtn").onclick=()=>goCue(cueIndex-1);
+$("nextCueBtn").onclick=()=>goCue(cueIndex+1);
+$("repeatBtn").onclick=()=>{stopPlayback(false);run(cueIndex)};
+$("retrySceneBtn").onclick=()=>{hideFatal();goCue(cueIndex)};
+$("skipSceneBtn").onclick=()=>{hideFatal();goCue(cueIndex+1)};
+$("voiceBtn").onclick=()=>{
+  voice=!voice;localStorage.setItem("glamore.training.voice",voice?"on":"off");
+  $("voiceBtn").textContent=voice?"🔊 Áudio ligado":"🔇 Áudio desligado";
+  $("voiceBtn").setAttribute("aria-pressed",String(voice));
+  if(!voice&&"speechSynthesis" in window)speechSynthesis.cancel();
 };
+$("fullscreenBtn").onclick=async()=>{if(!document.fullscreenElement)await $("videoCourse").requestFullscreen?.();else await document.exitFullscreen?.()};
+$("roleSelect").onchange=()=>{localStorage.setItem("glamore.training.role",$("roleSelect").value);lastContext="";goStep(stepIndex)};
+$("qaForm").onsubmit=e=>{e.preventDefault();const q=$("qaInput").value.trim();if(q){$("qaInput").value="";answerQuestion(q)}};
+document.querySelectorAll("[data-close-dialog]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
 
-nextBtn.onclick = () => {
-  stop();
-  showStep(index + 1);
-};
-
-playBtn.onclick = () => playing ? stop() : play();
-
-$("restartBtn").onclick = () => {
-  stop();
-  showStep(0);
-};
-
-showTargetBtn.onclick = () => presentCue(current(), cueIndex, playbackToken, { narrate: false });
-
-repeatCueBtn.onclick = async () => {
-  const wasPlaying = playing;
-  const repeatedPosition = cueIndex;
-  cancelPlayback();
-  playing = true;
-  playBtn.textContent = "Ⅱ Pausar";
-  const token = ++playbackToken;
-  await presentCue(current(), repeatedPosition, token, { narrate: true });
-  if (wasPlaying) {
-    playing = false;
-    if (repeatedPosition + 1 < currentCues.length) {
-      runSynchronizedLesson(repeatedPosition + 1);
-    } else if (index < steps.length - 1) {
-      index += 1;
-      renderLesson(current());
-      renderMap();
-      saveProgress();
-      clearTarget();
-      await setFrame(current());
-      runSynchronizedLesson(0);
-    } else {
-      stop();
-    }
-  } else {
-    playing = false;
-    playBtn.textContent = "▶ Iniciar aula";
-    playBtn.setAttribute("aria-pressed", "false");
-  }
-};
-
-voiceBtn.onclick = () => {
-  voice = !voice;
-  localStorage.setItem("glamore.training.voice", voice ? "on" : "off");
-  voiceBtn.textContent = voice ? "Narração ligada" : "Narração desligada";
-  voiceBtn.setAttribute("aria-pressed", String(voice));
-  if (!voice && "speechSynthesis" in window) speechSynthesis.cancel();
-  if (playing) {
-    const resumeCue = cueIndex;
-    cancelPlayback();
-    playing = false;
-    runSynchronizedLesson(resumeCue);
-  }
-};
-
-reloadBtn.onclick = () => {
-  stop();
-  frame.src = pageUrl(current());
-  setTimeout(() => showStep(index, { keepTab: true, previewCue: false }), 900);
-};
-
-roleSelect.onchange = () => {
-  stop();
-  localStorage.setItem("glamore.training.role", roleSelect.value);
-  localStorage.removeItem("glamore.training.loggedOut");
-  lastContextKey = "";
-  showStep(index, { keepTab: true, previewCue: false });
-};
-
-$("chooseTrackBtn").onclick = () => trackDialog.showModal();
-$("mapBtn").onclick = () => {
-  renderMap();
-  mapDialog.showModal();
-};
-
-document.querySelectorAll("[data-close-dialog]").forEach((button) => {
-  button.onclick = () => button.closest("dialog").close();
-});
-
-qaForm.onsubmit = (event) => {
-  event.preventDefault();
-  const question = qaInput.value.trim();
-  if (!question) return;
-  qaInput.value = "";
-  answerQuestion(question);
-};
-
-$("clearQaBtn").onclick = () => {
-  qaMessages.innerHTML = '<div class="qa-system">Conversa limpa. Faça uma nova pergunta.</div>';
-};
-
-frame.addEventListener("load", () => {
-  const doc = frameDoc();
-  installGuard(doc);
-  frameStatus.textContent = "Tela carregada. O destaque seguirá a narração, sem avançar sozinho.";
-});
-
-document.addEventListener("keydown", (event) => {
-  const typing = ["INPUT", "TEXTAREA", "SELECT"].includes(event.target.tagName);
-
-  if (event.key === "ArrowRight" && !typing) {
-    stop();
-    showStep(index + 1);
-  }
-  if (event.key === "ArrowLeft" && !typing) {
-    stop();
-    showStep(index - 1);
-  }
-  if (event.key === "Escape") {
-    if (trackDialog.open) trackDialog.close();
-    if (mapDialog.open) mapDialog.close();
+window.addEventListener("message",event=>{
+  if(event.data?.type==="training-user-scroll-blocked"||event.data?.type==="training-action-blocked"){
+    $("cameraMessage").classList.add("show");setTimeout(()=>$("cameraMessage").classList.remove("show"),1800);
   }
 });
+window.addEventListener("resize",async()=>{if(currentTarget){await sleep(100);const r=currentTarget.bridge.rect(currentTarget.el);paintSpotlight(scaledRect(r,currentScale),cueLabel(currentTarget.cue))}});
+videoStage.addEventListener("wheel",e=>{e.preventDefault();$("cameraMessage").classList.add("show");setTimeout(()=>$("cameraMessage").classList.remove("show"),1800)},{passive:false});
 
-window.__GLAMORE_TRAINING_SYNC__ = {
-  version: "3.0.0",
-  state: () => ({
-    track: activeTrack?.id || "",
-    stepId: current()?.id || "",
-    stepIndex: index,
-    cueIndex,
-    cueCount: currentCues.length,
-    cueText: currentCues[cueIndex]?.text || "",
-    playing,
-    voice
-  }),
-  goToStep: async (stepId) => {
-    const position = steps.findIndex((step) => step.id === stepId);
-    if (position < 0) return false;
-    await showStep(position);
-    return true;
-  },
-  previewCue: async (position) => {
-    const safe = Math.max(0, Math.min(currentCues.length - 1, Number(position) || 0));
-    await presentCue(current(), safe, playbackToken, { narrate: false });
-    return true;
-  },
-  start: () => play(),
-  pause: () => stop(),
-  setVoice: (enabled) => {
-    voice = Boolean(enabled);
-    localStorage.setItem("glamore.training.voice", voice ? "on" : "off");
-    voiceBtn.textContent = voice ? "Narração ligada" : "Narração desligada";
-    voiceBtn.setAttribute("aria-pressed", String(voice));
-  }
-};
-
-voiceBtn.textContent = voice ? "Narração ligada" : "Narração desligada";
-voiceBtn.setAttribute("aria-pressed", String(voice));
-renderTracks();
-renderQuickQuestions();
-activateTab("lesson");
-
-const savedTrack = localStorage.getItem("glamore.training.track") || "rapido";
-selectTrack(savedTrack);
-
-setTimeout(() => {
-  if (!localStorage.getItem("glamore.training.v3.welcomed")) {
-    localStorage.setItem("glamore.training.v3.welcomed", "1");
-    trackDialog.showModal();
-  }
-}, 450);
+renderTracks();renderQuickQuestions();
+$("voiceBtn").textContent=voice?"🔊 Áudio ligado":"🔇 Áudio desligado";
+$("trackDialog").showModal();

@@ -1,39 +1,23 @@
-# Treinamento Profissional Glamore V3
+# Glamore Joias — Videoaula Profissional V4
 
-Site separado do sistema oficial, preparado para GitHub Pages.
-
-## Correção principal da V3
-
-A versão anterior trocava a tela e destacava um único elemento antes de narrar um texto longo. Isso fazia o sistema parecer adiantado em relação ao áudio.
-
-A V3 usa **cenas sincronizadas**:
-
-1. localiza o elemento real;
-2. rola a tela até ele;
-3. aplica o destaque dourado;
-4. move o cursor até o mesmo elemento;
-5. somente então inicia a frase correspondente;
-6. aguarda o áudio terminar;
-7. só depois passa ao próximo campo, botão ou card.
-
-Não existe mais avanço de aula calculado por tempo estimado. O áudio controla a sequência.
+Pacote independente para o repositório `tsvalencio-IA/treinamento`.
 
 ## Publicação
 
-Envie todos os arquivos extraídos para a raiz do repositório `treinamento`.
+1. Apague os arquivos antigos do repositório de treinamento.
+2. Extraia este ZIP.
+3. Envie todo o conteúdo extraído para a raiz do repositório.
+4. Não envie ao repositório oficial GlamoreJoias.
+5. Abra `https://tsvalencio-ia.github.io/treinamento/verificar.html`.
 
-URL:
+## Diferença da V4
 
-`https://tsvalencio-ia.github.io/treinamento/`
-
-Verificação:
-
-`https://tsvalencio-ia.github.io/treinamento/verificar.html`
-
-## Segurança
-
-- banco demonstrativo local;
-- nenhuma credencial Firebase oficial;
-- nenhuma ação chega ao sistema real;
-- telas renderizadas pelo código da base enviada;
-- 57 aulas e mais de 200 cenas audiovisuais sincronizadas.
+- tela do sistema permanece fixa e sempre visível;
+- não existe rolagem externa durante a aula;
+- o usuário não consegue tirar a câmera do item;
+- cada frase localiza o elemento exato antes do áudio;
+- a câmera centraliza e amplia a tela real;
+- o destaque permanece até o áudio terminar;
+- a legenda muda de cima para baixo para não encobrir o item;
+- se um elemento não for localizado, a aula pausa em vez de destacar uma área genérica;
+- nenhum dado alcança o Firebase oficial.
