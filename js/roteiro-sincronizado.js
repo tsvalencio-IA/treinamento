@@ -339,12 +339,12 @@ export const SYNC_TARGETS = {
     { text: "Modelo 3D", say: "O usuário também pode girar e aproximar o modelo tridimensional na própria página." }
   ],
   finish: [
-    { selector: "main.main", label: "sistema completo", say: "Você concluiu esta trilha. Use o mapa para rever uma função específica ou a área Perguntar para consultar uma dúvida." }
+    { selector: "main.main", label: "sistema completo", say: "A trilha foi concluída. Você pode rever uma função específica na lista de aulas ou abrir a área de perguntas." }
   ]
 };
 
 export function synchronizedTargetsFor(step) {
   const configured = SYNC_TARGETS[step.id];
   if (Array.isArray(configured) && configured.length) return configured;
-  return [{ ...(step.target || { selector: "main.main" }), say: "Observe o item destacado enquanto a explicação é narrada." }];
+  return [{ ...(step.target || { selector: "main.main" }), say: "Use esta área para continuar a rotina mostrada nesta aula." }];
 }

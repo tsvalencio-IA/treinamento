@@ -63,15 +63,53 @@ function detailFor(step){
 function buildCues(step){
   const detail = detailFor(step);
   const targets = synchronizedTargetsFor(step);
-  const result = targets.map((target, i) => ({
-    target,
-    text:target.say || `Observe ${target.label || target.text || "o item destacado"}.`,
-    click:Boolean(target.click),
-    section:i === 0 ? "introdução" : "operação"
-  }));
-  result.push({ target:targets.at(-1) || step.target, text:`O que o sistema faz: ${detail.system}`, section:"lógica" });
-  result.push({ target:targets.at(-1) || step.target, text:`Resultado esperado: ${detail.result}`, section:"resultado" });
-  result.push({ target:targets[0] || step.target, text:`Atenção: ${detail.attention}`, section:"atenção" });
+  const firstTarget = targets[0] || step.target;
+  const lastTarget = targets.at(-1) || step.target;
+  const result = [];
+
+  // Abertura curta da função, sem explicar o motor do treinamento.
+  if (detail.simple) {
+    result.push({
+      target:firstTarget,
+      text:detail.simple,
+      click:false,
+      section:"objetivo"
+    });
+  }
+
+  // Passo a passo visual: cada frase permanece ligada ao campo, botão,
+  // aba ou card exato citado na narração.
+  for (const target of targets) {
+    const text = String(target.say || "").trim();
+    if (!text) continue;
+    result.push({
+      target,
+      text,
+      click:Boolean(target.click),
+      section:"passo"
+    });
+  }
+
+  // Encerramento prático: como o usuário confere que concluiu corretamente.
+  if (detail.result) {
+    result.push({
+      target:lastTarget,
+      text:detail.result,
+      click:false,
+      section:"conferência"
+    });
+  }
+
+  // Alerta curto e operacional, sem linguagem técnica desnecessária.
+  if (detail.attention) {
+    result.push({
+      target:lastTarget,
+      text:detail.attention,
+      click:false,
+      section:"cuidado"
+    });
+  }
+
   return result.filter(c => String(c.text || "").trim());
 }
 
@@ -233,7 +271,7 @@ async function animateClick(){
 
 async function focusCue(step, cue){
   resetCamera();
-  frameStatus.textContent = `Localizando exatamente: ${cueLabel(cue)}...`;
+  frameStatus.textContent = `Abrindo: ${cueLabel(cue)}...`;
   const located = await locateTarget(step,cue);
   if (!located){
     showFatal(`O elemento “${cueLabel(cue)}” não foi encontrado na tela ${step.title}. A aula foi pausada para não destacar uma área genérica ou ensinar uma posição errada.`);
@@ -255,10 +293,10 @@ async function focusCue(step, cue){
       await sleep(250); await animateClick();
       try{ bridge.safeActivate(el,cueLabel(cue)); }catch{}
     }
-    frameStatus.textContent = `Na tela: ${cueLabel(cue)}.`;
+    frameStatus.textContent = `Mostrando: ${cueLabel(cue)}.`;
     return true;
   }catch(err){
-    showFatal(`A câmera não conseguiu enquadrar “${cueLabel(cue)}”: ${err?.message || err}`);
+    showFatal(`A tela não conseguiu mostrar “${cueLabel(cue)}”: ${err?.message || err}`);
     return false;
   }
 }
@@ -312,9 +350,9 @@ function speak(text, token){
 async function presentCue(position,token,{narrate=true}={}){
   cueIndex=position; updateHeader();
   const step=currentStep(),cue=currentCue();
-  narrationTarget.textContent=`AGORA NA TELA · ${cueLabel(cue)}`;
+  narrationTarget.textContent=`PASSO ATUAL · ${cueLabel(cue)}`;
   narrationProgress.textContent=`Cena ${cueIndex+1} de ${cues.length}`;
-  spokenNow.textContent="A câmera está abrindo o item correto...";
+  spokenNow.textContent="Abrindo a função...";
   const ok=await focusCue(step,cue);
   if(!ok||token!==playbackToken)return false;
   spokenNow.textContent=cue.text;

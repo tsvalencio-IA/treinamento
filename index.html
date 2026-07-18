@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="Videoaulas interativas e fiéis do Ateliê Digital de Joias.">
-  <title>Videoaula Profissional | Ateliê Digital de Joias</title>
+  <title>Treinamento Completo | Ateliê Digital de Joias</title>
   <link rel="stylesheet" href="./css/treinamento.css?v=4.0.0">
 </head>
 <body>
@@ -13,14 +13,14 @@
       <div class="video-brand">
         <div class="video-mark">◆</div>
         <div>
-          <strong>Videoaula Profissional</strong>
-          <span>Ateliê Digital de Joias · tela real demonstrativa · dados locais simulados</span>
+          <strong>Treinamento Completo</strong>
+          <span>Ateliê Digital de Joias · aprenda cada função passo a passo</span>
         </div>
       </div>
 
       <div class="lesson-head">
         <span id="chapterLabel">Começo</span>
-        <strong id="stepTitle">Escolha uma trilha para começar</strong>
+        <strong id="stepTitle">Escolha o assunto que deseja aprender</strong>
         <small><span id="stepCount">0 / 0</span> · <span id="cueCount">cena 0 / 0</span></small>
       </div>
 
@@ -50,21 +50,21 @@
       <div class="stage-waiting" id="stageWaiting">
         <div class="waiting-icon">▶</div>
         <strong>Treinamento pronto</strong>
-        <span>Escolha uma trilha. A câmera vai localizar, aproximar e destacar exatamente o item citado pelo áudio.</span>
+        <span>Escolha uma trilha. Acompanhe a tela e aprenda onde clicar, o que preencher e como conferir o resultado.</span>
         <button id="chooseTrackBtn">Escolher trilha</button>
       </div>
 
       <section class="narration-card bottom" id="narrationCard" aria-live="polite">
         <div class="narration-meta">
           <span class="live-dot"></span>
-          <strong id="narrationTarget">AGORA NA TELA</strong>
+          <strong id="narrationTarget">PASSO ATUAL</strong>
           <small id="narrationProgress">Cena aguardando</small>
         </div>
-        <p id="spokenNow">O áudio ainda não começou.</p>
+        <p id="spokenNow">Escolha uma trilha e pressione Iniciar.</p>
         <div class="word-progress"><span id="wordProgress"></span></div>
       </section>
 
-      <div class="camera-message" id="cameraMessage">A câmera da aula controla a tela para manter o item visível.</div>
+      <div class="camera-message" id="cameraMessage"></div>
     </main>
 
     <footer class="video-controls">
@@ -94,7 +94,7 @@
         </label>
       </div>
       <div class="status-row">
-        <span class="safe-pill">DEMONSTRAÇÃO SEGURA · NÃO USA O FIREBASE OFICIAL</span>
+        <span class="safe-pill">AMBIENTE DE TREINAMENTO</span>
         <span id="frameStatus">Aguardando o início.</span>
         <a href="https://glamore-joias.vercel.app/" target="_blank" rel="noopener">Abrir sistema oficial ↗</a>
       </div>
@@ -105,8 +105,8 @@
     <div class="dialog-head">
       <div>
         <span class="eyebrow">ESCOLHA O CURSO</span>
-        <h2>Aprenda vendo a função real</h2>
-        <p>Durante cada frase, a câmera abre a tela correta, centraliza o elemento citado e mantém o destaque até o áudio terminar.</p>
+        <h2>Escolha o que você quer aprender</h2>
+        <p>Escolha uma trilha completa ou vá diretamente para a função que você precisa usar.</p>
       </div>
       <button data-close-dialog aria-label="Fechar">×</button>
     </div>
@@ -135,13 +135,13 @@
     </div>
     <p id="lessonLead" class="lesson-lead"></p>
     <div class="lesson-grid">
-      <article><small>O QUE VOCÊ FAZ</small><p id="lessonUser"></p></article>
-      <article><small>O QUE O SISTEMA FAZ</small><p id="lessonSystem"></p></article>
-      <article><small>RESULTADO ESPERADO</small><p id="lessonResult"></p></article>
-      <article class="attention"><small>ATENÇÃO</small><p id="lessonAttention"></p></article>
+      <article><small>COMO USAR</small><p id="lessonUser"></p></article>
+      <article><small>O QUE ACONTECE DEPOIS</small><p id="lessonSystem"></p></article>
+      <article><small>COMO CONFERIR</small><p id="lessonResult"></p></article>
+      <article class="attention"><small>CUIDADO</small><p id="lessonAttention"></p></article>
     </div>
     <details>
-      <summary>Explicação técnica e rastreabilidade</summary>
+      <summary>Detalhes e rastreabilidade</summary>
       <p id="lessonAudit"></p>
       <p id="stepBody"></p>
       <div id="stepSource"></div>

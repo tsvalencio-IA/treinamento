@@ -1,11 +1,11 @@
 export const LESSON_DETAILS = {
   "intro": {
-    "simple": "Você está em uma cópia segura do Ateliê Digital. Ela foi criada para ensinar sem mexer no estoque real.",
-    "user": "Escolha uma trilha e avance pelos passos. Observe a explicação deste lado e o destaque dourado na tela ao lado.",
-    "system": "Carrega as mesmas telas e regras visuais do projeto, porém com dados locais de demonstração.",
-    "result": "Você aprende onde clicar, o que cada ação faz e qual resultado deve aparecer.",
-    "attention": "Nada deste treinamento deve ser usado para conferir saldos reais da empresa.",
-    "audit": "O ambiente de treinamento não grava operações no Firebase oficial."
+    "simple": "O Ateliê Digital organiza toda a operação de joias em áreas separadas e conectadas.",
+    "user": "Use o menu para abrir Painel, Importar PDF, Estoque, Vendas, Alertas, Produção, Joias, Clientes, Relatórios, Auditoria e Regras.",
+    "system": "Cada área mostra somente as informações e ações relacionadas àquela rotina.",
+    "result": "Você consegue localizar rapidamente onde registrar uma entrada, uma venda, uma produção ou uma consulta.",
+    "attention": "Antes de executar uma operação, confirme que está na área e no documento corretos.",
+    "audit": "As operações que alteram dados registram o usuário, a data, a hora e o cargo responsável."
   },
   "login": {
     "simple": "Cada pessoa entra com seu próprio usuário. O cargo define quais telas e ações ela pode acessar.",

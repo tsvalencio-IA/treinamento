@@ -1,6 +1,6 @@
 {
-  "produto": "GlamoreJoias-TREINAMENTO-VIDEOAULA-PROFISSIONAL-V4",
-  "versao": "4.0.0",
+  "produto": "GlamoreJoias-TREINAMENTO-COMPLETO-PROFISSIONAL-V5",
+  "versao": "5.0.0",
   "destino": "repositorio separado tsvalencio-IA/treinamento",
   "sistema_oficial_modificado": false,
   "firebase_oficial": false,
@@ -14,5 +14,6 @@
     "legenda dinamica que evita o alvo",
     "bloqueio de rolagem manual",
     "pausa segura quando um elemento nao e encontrado"
-  ]
+  ],
+  "narracao": "ensina somente como usar o sistema, sem explicar o motor do treinamento"
 }

@@ -1,0 +1,37 @@
+RELATÓRIO — TREINAMENTO COMPLETO V5
+
+CORREÇÃO PRINCIPAL
+A narração deixou de explicar o motor do treinamento, a câmera, a cópia local
+ou frases genéricas como “O que o sistema faz”.
+
+AGORA CADA AULA NARRA SOMENTE:
+1. Para que serve a função.
+2. Onde clicar.
+3. O que preencher.
+4. Como continuar.
+5. Como conferir que deu certo.
+6. Qual cuidado operacional deve ser respeitado.
+
+EXEMPLO
+Em vez de:
+“O que o sistema faz: cria peças físicas, lote e movimento.”
+
+A aula fala:
+“Preencha o código, a descrição, o material, a medida, a quantidade,
+o peso total e o lote. Depois confirme a entrada. As peças passarão
+a aparecer como disponíveis no estoque.”
+
+FIDELIDADE VISUAL
+A sincronização da V4 foi mantida:
+- abre a aba correta;
+- localiza o elemento exato;
+- centraliza e amplia;
+- destaca o campo, botão, aba ou card citado;
+- inicia o áudio somente depois de mostrar o item;
+- pausa quando o item não é localizado.
+
+ISOLAMENTO
+- repositório separado;
+- dados demonstrativos locais;
+- sem Firebase oficial;
+- sistema oficial não alterado.

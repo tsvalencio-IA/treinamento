@@ -97,3 +97,8 @@ button{cursor:pointer}
   .track-grid,.map-content,.lesson-grid{grid-template-columns:1fr}
 }
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* V5: a interface ensina o sistema; os mecanismos internos não disputam atenção. */
+.camera-message{display:none!important}
+.narration-meta strong{font-size:11px}
+.safe-pill{opacity:.72}

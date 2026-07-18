@@ -2,13 +2,13 @@ export const MANUAL_TOUR = [
   {
     "id": "intro",
     "chapter": "Começo",
-    "title": "Central de treinamento fiel ao sistema",
+    "title": "Visão geral do Ateliê Digital",
     "route": "dashboard",
     "target": {
       "text": "O que tem, o que vendeu e o que precisa de decisão."
     },
     "duration": 10,
-    "body": "Esta apresentação usa uma cópia de treinamento do app.js e do styles.css reais da versão enviada. As telas, botões, rotas e regras visuais são renderizados pelo código verdadeiro, mas os dados são simulados e nenhuma ação alcança o Firebase oficial."
+    "body": "O Ateliê Digital reúne em um só lugar o Painel, a importação de PDFs, o estoque, as vendas, os alertas, a produção, os clientes, os relatórios, a auditoria e as regras de acesso. Comece pelo Painel para entender a situação da operação e use o menu para abrir cada rotina."
   },
   {
     "id": "login",

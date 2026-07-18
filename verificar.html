@@ -1,15 +1,15 @@
-<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verificar V4</title><style>body{font:16px system-ui;background:#eef1f5;padding:25px;color:#172033}.box{max-width:850px;margin:auto;background:#fff;padding:25px;border-radius:18px}li{margin:9px 0}.ok{color:#087443}.bad{color:#b42318}</style></head><body><div class="box"><h1>Verificação da Videoaula V4</h1><ol id="list"></ol><h2 id="result">Verificando...</h2></div><script type="module">
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Verificar V4</title><style>body{font:16px system-ui;background:#eef1f5;padding:25px;color:#172033}.box{max-width:850px;margin:auto;background:#fff;padding:25px;border-radius:18px}li{margin:9px 0}.ok{color:#087443}.bad{color:#b42318}</style></head><body><div class="box"><h1>Verificação do Treinamento Completo V5</h1><ol id="list"></ol><h2 id="result">Verificando...</h2></div><script type="module">
 const tests=[
 ["Página principal",()=>fetch("./index.html").then(r=>r.ok)],
 ["CSS V4",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes(".video-stage")&&t.includes(".target-ring"))],
-["Motor V4",()=>fetch("./js/treinamento.js").then(r=>r.text()).then(t=>t.includes("locateTarget")&&t.includes("paintSpotlight")&&!t.includes('querySelector("main.main,#app,body")'))],
+["Motor visual sincronizado",()=>fetch("./js/treinamento.js").then(r=>r.text()).then(t=>t.includes("locateTarget")&&t.includes("paintSpotlight")&&!t.includes('querySelector("main.main,#app,body")'))],
 ["Ponte da tela real",()=>fetch("./sistema/js/training-bridge.js").then(r=>r.text()).then(t=>t.includes("GlamoreTrainingBridge")&&t.includes("lockUserNavigation"))],
 ["Sistema demonstrativo",()=>fetch("./sistema/index.html").then(r=>r.text()).then(t=>t.includes("training-bridge.js"))],
 ["Dados locais",()=>fetch("./sistema/js/firebaseClient.js").then(r=>r.text()).then(t=>t.includes('mode: "treinamento_local"'))],
 ["Sem Firebase oficial",()=>fetch("./sistema/js/config.js").then(r=>r.text()).then(t=>!t.includes("firebaseio.com")&&!t.includes("apiKey"))],
 ["Roteiro sincronizado",()=>fetch("./js/roteiro-sincronizado.js").then(r=>r.text()).then(t=>t.includes("SYNC_TARGETS"))],
 ["Sem rolagem externa",()=>fetch("./css/treinamento.css").then(r=>r.text()).then(t=>t.includes("overflow:hidden")&&t.includes("100dvh"))],
-["Sem fallback genérico",()=>fetch("./js/treinamento.js").then(r=>r.text()).then(t=>t.includes("Cena pausada para não ensinar errado"))]
+["Narração ensina o sistema",()=>Promise.all([fetch("./js/treinamento.js").then(r=>r.text()),fetch("./js/explicacoes.js").then(r=>r.text())]).then(([t,e])=>!t.includes("O que o sistema faz:")&&!t.includes("Resultado esperado:")&&!e.includes("Você está em uma cópia segura"))]
 ];
 let ok=0;for(const [name,fn] of tests){let pass=false;try{pass=await fn()}catch{};if(pass)ok++;document.querySelector("#list").insertAdjacentHTML("beforeend",`<li class="${pass?"ok":"bad"}">${pass?"✓":"✗"} ${name}</li>`)}document.querySelector("#result").textContent=ok===tests.length?`APROVADO — ${ok}/${tests.length}`:`REPROVADO — ${ok}/${tests.length}`;
 </script></body></html>
